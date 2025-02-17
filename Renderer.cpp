@@ -115,3 +115,31 @@ void Renderer::RenderTexture(Texture* _texture, Point _point)
     M_ASSERT((SDL_RenderCopyEx(m_renderer, GetSDLTexture(_texture),
         NULL, &m_destRect, 0, NULL, SDL_FLIP_VERTICAL)) >= 0, "Could not render texture");
 }
+
+Point Renderer::GetWindowSize()
+{
+    int w;
+    int h;
+    SDL_GetWindowSize(m_window, &w, &h);
+    return Point(w, h);
+}
+
+void Renderer::SetViewPort(Rect _view)
+{
+    m_viewPort.x = _view.X1;
+    m_viewPort.y = _view.Y1;
+    m_viewPort.w = _view.X2 - _view.X1;
+    m_viewPort.h = _view.Y2 - _view.Y1;
+    SDL_RenderSetViewport(m_renderer, &m_viewPort);
+}
+
+void Renderer::RenderTexture(Texture* _texture, Rect _rect)
+{
+    m_destRect.x = _rect.X1;
+    m_destRect.y = _rect.Y1;
+    m_destRect.w = _rect.X2 - _rect.X1;
+    m_destRect.h = _rect.Y2 - _rect.Y1;
+    M_ASSERT(((SDL_RenderCopyEx(m_renderer, GetSDLTexture(_texture), 
+        NULL, &m_destRect, 0, NULL, SDL_FLIP_VERTICAL)) >= 0),
+        "Could not rendertexture");
+}
