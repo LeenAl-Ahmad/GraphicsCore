@@ -1,7 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "StandardIncludes.h"
 #include "Texture.h"
 
 class Asset;
@@ -64,13 +63,16 @@ class Renderer : public Singleton<Renderer>
 
         // Methods
         void Initialize(int _xResolution, int _yResolution);
+        Point GetWindowSize();
         void SetDrawColor(Color _color);
         void ClearScreen();
+        void SetViewPort(Rect _view);
         void RenderPoint(Point _p);
         void RenderLine(Rect _p);
         void RenderRectangle(Rect _rect);
         void RenderFillRectangle(Rect _rect);
         void RenderTexture(Texture* _t, Point _p);
+        void RenderTexture(Texture* _texture, Rect _rect);
         void Shutdown();
 
     private:
@@ -79,6 +81,7 @@ class Renderer : public Singleton<Renderer>
         SDL_Renderer* m_renderer;
         SDL_Rect m_destRect;
         SDL_Surface* m_surface;
+        SDL_Rect m_viewPort;
         map<string, SDL_Texture*> m_texture;
     };
 

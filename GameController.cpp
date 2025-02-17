@@ -3,7 +3,7 @@
 
 GameController::GameController()
 {
-    m_sdlEvent = { };
+    m_sdlEvent = { }; 
 }
 
 GameController::~GameController()
