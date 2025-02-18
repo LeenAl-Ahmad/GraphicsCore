@@ -6,6 +6,7 @@ Renderer::Renderer()
     m_window = nullptr;
     m_renderer = nullptr;
     m_destRect = { };
+    m_srect = { };
     m_surface = nullptr;
 }
 
@@ -141,5 +142,22 @@ void Renderer::RenderTexture(Texture* _texture, Rect _rect)
     m_destRect.h = _rect.Y2 - _rect.Y1;
     M_ASSERT(((SDL_RenderCopyEx(m_renderer, GetSDLTexture(_texture), 
         NULL, &m_destRect, 0, NULL, SDL_FLIP_VERTICAL)) >= 0),
+        "Could not rendertexture");
+}
+
+void Renderer::RenderTexture(Texture* _texture, Rect _srect, Rect _rect)
+{
+    m_destRect.x = _rect.X1;
+    m_destRect.y = _rect.Y1;
+    m_destRect.w = _rect.X2 - _rect.X1;
+    m_destRect.h = _rect.Y2 - _rect.Y1;
+
+    m_srect.x = _srect.X1;
+    m_srect.y = _texture->GetImageInfo()->Height - _srect.Y2;
+    m_srect.w = _srect.X2 - _srect.X1;
+    m_srect.h = _srect.Y2 - _srect.Y1;
+
+    M_ASSERT(((SDL_RenderCopyEx(m_renderer, GetSDLTexture(_texture),
+        &m_srect, &m_destRect, 0, NULL, SDL_FLIP_VERTICAL)) >= 0),
         "Could not rendertexture");
 }
