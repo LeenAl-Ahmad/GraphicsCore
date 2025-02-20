@@ -113,7 +113,7 @@ void Level::Update(float deltaTime) {
                 it->currentFrame = static_cast<int>(animationTime) % 8;
 
                 // Check if the warrior has gone off-screen
-                if (it->x > 800) { // Assuming screen width is 800
+                if (it->x > 1920) { // Assuming screen width is 800
                     isCompleted = true; // Level is complete when the first warrior goes off-screen
                     break;
                 }
@@ -181,7 +181,7 @@ void Level::Update(float deltaTime) {
             }
 
             // Check if the rock has gone off-screen
-            if (it != rocks.end() && it->y > 600) { // Assuming screen height is 600
+            if (it != rocks.end() && it->y > 1080) { // Assuming screen height is 600
                 isCompleted = true; // Level is complete when the first rock goes off-screen
                 break;
             }
@@ -210,8 +210,7 @@ void Level::Render(Renderer* renderer, Timing* timing) {
     for (const auto& warrior : warriors) {
         // Destination rectangle (scaled by 1.8x)
         float scale = 1.8f;
-        float additionalHeight = (i + 1);
-        Rect destRect(warrior.x, warrior.y + additionalHeight, warrior.x + 69 * scale, warrior.y + additionalHeight + (44 * scale));
+        Rect destRect(warrior.x, warrior.y , warrior.x + 69 * scale, warrior.y  + (44 * scale));
 
         // Render the warrior with the current frame
         if (warrior.state == 0) { // Alive

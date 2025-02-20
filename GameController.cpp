@@ -21,7 +21,7 @@ void GameController::RunGame() {
     AssetController::Instance().Initialize(10000000); // Allocate 10MB
     Renderer* r = &Renderer::Instance();
     Timing* t = &Timing::Instance();
-    r->Initialize(800, 600);
+    r->Initialize(1920, 1080);
 
     // Ensure Object Pools are properly initialized
     SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
