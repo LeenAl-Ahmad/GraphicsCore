@@ -3,9 +3,9 @@
 Level::Level(int levelNumber) : font(nullptr), sheet(nullptr), startTime(0), isCompleted(false), levelNumber(levelNumber) {}
 
 Level::~Level() {
-    if (sheet) {
-        delete sheet;
-    }
+    // Do NOT delete sheet manually, it's managed by the object pool
+    sheet = nullptr;
+
     if (font) {
         font->Shutdown();
         delete font;
@@ -17,11 +17,15 @@ void Level::Initialize(Renderer* renderer) {
     font = new TTFont();
     font->Initialize(20);
 
+    if (!SpriteSheet::Pool) {
+        std::cerr << "Error: SpriteSheet::Pool is null!" << std::endl;
+        return;
+    }
     // Initialize sprite sheet
     sheet = SpriteSheet::Pool->GetResource();
     sheet->Load("./Assets/Textures/Warrior.tga");
     sheet->SetSize(17, 6, 69, 44);
-    sheet->AddAnimation(EN_AN_RUN, 6, 8, 6.0f); // Add "Run" animation (starts at frame 6, 8 frames)
+    sheet->AddAnimation(EN_AN_RUN, 6, run, 3.0f); // "Run" animation (starts at frame 6, 8 frames)
 
     // Initialize warriors
     for (int i = 0; i < 10; ++i) {
@@ -30,7 +34,7 @@ void Level::Initialize(Renderer* renderer) {
         warrior.x = 0; // Start at the left of the screen
         warrior.speed = 80 + (rand() % 21); // Random speed between 80 and 100
         warrior.animationSpeed = 4.8f + (warrior.speed - 80) * (1.2f / 20); // Animation speed scales with running speed
-        warrior.currentFrame = 0; // Start at frame 0
+        warrior.currentFrame = sheet->GetCurrentClip(EN_AN_RUN); // Start at frame 0
         warriors.push_back(warrior);
     }
 
@@ -47,8 +51,9 @@ void Level::Update(float deltaTime) {
     for (auto& warrior : warriors) {
         warrior.x += warrior.speed * deltaTime;
 
-        // Update animation frame
-        warrior.currentFrame = static_cast<int>((SDL_GetTicks() / 1000.0f * warrior.animationSpeed)) % 8;
+        // Calculate animation frame based on elapsed time and animation speed
+        float animationTime = gameTime * warrior.animationSpeed;
+        warrior.currentFrame = static_cast<int>(animationTime) % run;
 
         // Check if the warrior has gone off-screen
         if (warrior.x > 800) { // Assuming screen width is 800
@@ -65,29 +70,34 @@ void Level::Update(float deltaTime) {
 }
 
 void Level::Render(Renderer* renderer, Timing* timing) {
-    // Set background color for Level 1
-    renderer->SetDrawColor(Color(128, 128, 128, 255));
+    if (levelNumber == 1) {
+        renderer->SetDrawColor(Color(128, 128, 128, 255)); // Grey background
+    }
+    else if (levelNumber == 2) {
+        renderer->SetDrawColor(Color(0, 128, 0, 255)); // Green background
+    }
+
     renderer->ClearScreen();
 
     // Render warriors
+    int i = 0;
     for (const auto& warrior : warriors) {
-        // Calculate the source rectangle for the current frame
-        int frameX = 6 + warrior.currentFrame; // "Run" animation starts at frame 6
-        Rect srcRect(frameX * 69, 0, (frameX + 1) * 69, 44); // Source rectangle for the current frame
-
         // Destination rectangle (scaled by 1.8x)
-        Rect destRect(warrior.x, warrior.y, 69 * 1.8f, 44 * 1.8f);
+        float scale = 1.8f;
+        float additionalHeight = 150 * (i + 1); // 150, 300, 450, etc.
+        Rect destRect(warrior.x, warrior.y, 69 * scale, additionalHeight + (44 * scale));
 
-        // Render the warrior
-        renderer->RenderTexture(sheet, srcRect, destRect);
+        // Render the warrior with the current frame
+        renderer->RenderTexture(sheet, sheet->Update(EN_AN_RUN, warrior.currentFrame), destRect);
+        i++;
     }
 
-    // Render UI
+    // Render UI (FPS, Game time, Save status, etc.)
     std::string fps = "FPS: " + std::to_string(timing->GetFPS());
     font->Write(renderer->GetRenderer(), fps.c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 0, 0 });
 
     std::string timeText = "Game Time: " + std::to_string(gameTime) + "s";
-    font->Write(renderer->GetRenderer(), timeText.c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 140, 00 });
+    font->Write(renderer->GetRenderer(), timeText.c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 140, 0 });
 
     std::string saveStatus = autoSaved ? "Auto-saved at 5s" : "Not auto-saved yet";
     font->Write(renderer->GetRenderer(), saveStatus.c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 350, 0 });
@@ -119,6 +129,7 @@ void Level::Save(const std::string& filename) {
     }
 }
 
+
 void Level::Load(const std::string& filename) {
     std::ifstream inFile(filename, std::ios::binary);
     if (inFile.is_open()) {
@@ -140,3 +151,4 @@ void Level::Load(const std::string& filename) {
         std::cerr << "Failed to load level from " << filename << std::endl;
     }
 }
+

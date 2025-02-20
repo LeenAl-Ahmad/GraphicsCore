@@ -10,15 +10,19 @@ public:
     // Constructor and Destructor
     ObjectPool() {}
     ~ObjectPool()
+{
+    for (unsigned int count = 0; count < m_all.size(); count++)
     {
-        for (unsigned int count = 0; count < m_all.size(); count++)
+        if (m_all[count])  // Check if the pointer is valid before deleting
         {
             cout << "Deleting pool object: " << typeid(T).name() << endl;
             delete m_all[count];
         }
-        m_all.clear();
-        m_available.clear();
     }
+    m_all.clear();
+    m_available.clear();
+}
+
 
     // Methods
     T* GetResource()

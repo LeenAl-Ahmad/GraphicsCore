@@ -27,16 +27,20 @@ private:
     int levelNumber;
 
     struct Warrior {
-        float x; // X position
-        float y; // Y position
-        float speed; // Running speed (pixels per second)
-        float animationSpeed; // Animation speed
-        int currentFrame; // Current frame of the "Run" animation
+        float x, y;
+        float speed;
+        float animationSpeed;
+        int currentFrame;  // The current frame in the animation loop
+        int animationClip; // This could store which animation clip to use (EN_AN_RUN, etc.)
+
+        Warrior() : x(0), y(0), speed(0), animationSpeed(1.0f), currentFrame(0), animationClip(EN_AN_RUN) {}
     };
+
 
     std::vector<Warrior> warriors; // List of warriors
     bool autoSaved; // Track if the level has been auto-saved
     Uint32 gameTime; // Track game time in seconds
+    int run = 8;
 };
 
 #endif // LEVEL_H
