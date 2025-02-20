@@ -27,6 +27,7 @@ void GameController::RunGame() {
     SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
     SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
 
+    // Initialize the first level
     currentLevel = new Level(1);
     currentLevel->Initialize(r);
 
@@ -40,10 +41,7 @@ void GameController::RunGame() {
 
         // Check if the current level is complete
         if (currentLevel->IsComplete()) {
-            // Save the current level
-            currentLevel->Save("Level1.bin");
-
-            // Load the next level
+            // Load Level 2
             if (!nextLevel) {
                 nextLevel = new Level(2);
                 nextLevel->Initialize(r);

@@ -21,47 +21,76 @@ void Level::Initialize(Renderer* renderer) {
     sheet = SpriteSheet::Pool->GetResource();
     sheet->Load("./Assets/Textures/Warrior.tga");
     sheet->SetSize(17, 6, 69, 44);
-    sheet->AddAnimation(EN_AN_IDLE, 0, 6, 6.0f);
-    sheet->AddAnimation(EN_AN_RUN, 6, 8, 6.0f);
+    sheet->AddAnimation(EN_AN_RUN, 6, 8, 6.0f); // Add "Run" animation (starts at frame 6, 8 frames)
+
+    // Initialize warriors
+    for (int i = 0; i < 10; ++i) {
+        Warrior warrior;
+        warrior.y = 10 + i * 100; // Y positions: 10, 110, 210, etc.
+        warrior.x = 0; // Start at the left of the screen
+        warrior.speed = 80 + (rand() % 21); // Random speed between 80 and 100
+        warrior.animationSpeed = 4.8f + (warrior.speed - 80) * (1.2f / 20); // Animation speed scales with running speed
+        warrior.currentFrame = 0; // Start at frame 0
+        warriors.push_back(warrior);
+    }
 
     startTime = SDL_GetTicks();
+    autoSaved = false;
+    gameTime = 0;
 }
 
 void Level::Update(float deltaTime) {
-    // Update animations
-    sheet->Update(EN_AN_IDLE, deltaTime);
-    sheet->Update(EN_AN_RUN, deltaTime);
+    // Update game time
+    gameTime = (SDL_GetTicks() - startTime) / 1000;
 
-    if (SDL_GetTicks() - startTime >= 5000) {
-        isCompleted = true;
+    // Update warrior positions and frames
+    for (auto& warrior : warriors) {
+        warrior.x += warrior.speed * deltaTime;
+
+        // Update animation frame
+        warrior.currentFrame = static_cast<int>((SDL_GetTicks() / 1000.0f * warrior.animationSpeed)) % 8;
+
+        // Check if the warrior has gone off-screen
+        if (warrior.x > 800) { // Assuming screen width is 800
+            isCompleted = true; // Level is complete when the first warrior goes off-screen
+            break;
+        }
+    }
+
+    // Auto-save after 5 seconds
+    if (!autoSaved && gameTime >= 5) {
+        Save("Level1.bin");
+        autoSaved = true;
     }
 }
 
 void Level::Render(Renderer* renderer, Timing* timing) {
-    // Clear screen
-    if (levelNumber == 1) {
-        // Grey background for the first level
-        renderer->SetDrawColor(Color(128, 128, 128, 255));
-    }
-    else if (levelNumber == 2) {
-        // Light-green background for the second level
-        renderer->SetDrawColor(Color(0, 128, 0, 255));
-    }
+    // Set background color for Level 1
+    renderer->SetDrawColor(Color(128, 128, 128, 255));
     renderer->ClearScreen();
 
-    // Render animations
-    renderer->RenderTexture(sheet, sheet->Update(EN_AN_IDLE, timing->GetDeltaTime()), Rect(0, 0, 69 * 3, 44 * 3));
-    renderer->RenderTexture(sheet, sheet->Update(EN_AN_RUN, timing->GetDeltaTime()), Rect(0, 150, 69 * 3, 150 + 44 * 3));
-    // Render frame numbers
-    std::string idleFrame = "Frame number: " + std::to_string(sheet->GetCurrentClip(EN_AN_IDLE));
-    font->Write(renderer->GetRenderer(), idleFrame.c_str(), SDL_Color{ 0, 255, 0 }, SDL_Point{ 250, 50 });
+    // Render warriors
+    for (const auto& warrior : warriors) {
+        // Calculate the source rectangle for the current frame
+        int frameX = 6 + warrior.currentFrame; // "Run" animation starts at frame 6
+        Rect srcRect(frameX * 69, 0, (frameX + 1) * 69, 44); // Source rectangle for the current frame
 
-    std::string runFrame = "Frame number: " + std::to_string(sheet->GetCurrentClip(EN_AN_RUN));
-    font->Write(renderer->GetRenderer(), runFrame.c_str(), SDL_Color{ 0, 255, 0 }, SDL_Point{ 250, 200 });
+        // Destination rectangle (scaled by 1.8x)
+        Rect destRect(warrior.x, warrior.y, 69 * 1.8f, 44 * 1.8f);
 
-    // Render FPS
-    std::string fps = "Frames per Second: " + std::to_string(timing->GetFPS());
+        // Render the warrior
+        renderer->RenderTexture(sheet, srcRect, destRect);
+    }
+
+    // Render UI
+    std::string fps = "FPS: " + std::to_string(timing->GetFPS());
     font->Write(renderer->GetRenderer(), fps.c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 0, 0 });
+
+    std::string timeText = "Game Time: " + std::to_string(gameTime) + "s";
+    font->Write(renderer->GetRenderer(), timeText.c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 140, 00 });
+
+    std::string saveStatus = autoSaved ? "Auto-saved at 5s" : "Not auto-saved yet";
+    font->Write(renderer->GetRenderer(), saveStatus.c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 350, 0 });
 
     // Present the rendered frame
     SDL_RenderPresent(renderer->GetRenderer());
@@ -72,26 +101,42 @@ bool Level::IsComplete() {
 }
 
 void Level::Save(const std::string& filename) {
-    // Open the file for writing in binary mode
     std::ofstream outFile(filename, std::ios::binary);
     if (outFile.is_open()) {
-        // Example: Save the current time when the level was saved
-        Uint32 saveTime = SDL_GetTicks();
-        outFile.write(reinterpret_cast<char*>(&saveTime), sizeof(saveTime));
+        // Save warrior data
+        for (const auto& warrior : warriors) {
+            outFile.write(reinterpret_cast<const char*>(&warrior), sizeof(Warrior));
+        }
 
-        // Example: Save the current animation frame for IDLE
-        int idleFrame = sheet->GetCurrentClip(EN_AN_IDLE);
-        outFile.write(reinterpret_cast<char*>(&idleFrame), sizeof(idleFrame));
+        // Save game time
+        outFile.write(reinterpret_cast<const char*>(&gameTime), sizeof(gameTime));
 
-        // Example: Save the current animation frame for RUN
-        int runFrame = sheet->GetCurrentClip(EN_AN_RUN);
-        outFile.write(reinterpret_cast<char*>(&runFrame), sizeof(runFrame));
-
-        // Close the file
         outFile.close();
         std::cout << "Level saved to " << filename << std::endl;
     }
     else {
         std::cerr << "Failed to save level to " << filename << std::endl;
+    }
+}
+
+void Level::Load(const std::string& filename) {
+    std::ifstream inFile(filename, std::ios::binary);
+    if (inFile.is_open()) {
+        // Load warrior data
+        warriors.clear();
+        for (int i = 0; i < 10; ++i) {
+            Warrior warrior;
+            inFile.read(reinterpret_cast<char*>(&warrior), sizeof(Warrior));
+            warriors.push_back(warrior);
+        }
+
+        // Load game time
+        inFile.read(reinterpret_cast<char*>(&gameTime), sizeof(gameTime));
+
+        inFile.close();
+        std::cout << "Level loaded from " << filename << std::endl;
+    }
+    else {
+        std::cerr << "Failed to load level from " << filename << std::endl;
     }
 }
