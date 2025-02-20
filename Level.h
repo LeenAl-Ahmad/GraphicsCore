@@ -16,10 +16,13 @@ public:
     void Update(float deltaTime);
     void Render(Renderer* renderer, Timing* timing);
     bool IsComplete();
+    void Save(const std::string& filename);
 
 private:
-    TTFont* font;          // Pointer to the font used for rendering text
-    SpriteSheet* sheet;    // Pointer to the sprite sheet for animations
+    TTFont* font;          
+    SpriteSheet* sheet;
+    Uint32 startTime; 
+    bool isCompleted;     
 };
 
 #endif // LEVEL_H

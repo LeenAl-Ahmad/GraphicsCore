@@ -14,6 +14,7 @@ public:
 private:
     SDL_Event m_sdlEvent;
     Level* currentLevel;
+    Level* nextLevel;
 };
 
 #endif // GAME_CONTROLLER_H
