@@ -49,6 +49,10 @@ struct Rect
     unsigned int Y1;
     unsigned int X2;
     unsigned int Y2;
+
+    bool Overlaps(const Rect& other) const {
+        return !(X2 < other.X1 || X1 > other.X2 || Y2 < other.Y1 || Y1 > other.Y2);
+    }
 };
 
 #endif // BASICSTRUCTS_H
