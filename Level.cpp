@@ -25,7 +25,7 @@ void Level::Initialize(Renderer* renderer) {
     sheet = SpriteSheet::Pool->GetResource();
     sheet->Load("./Assets/Textures/Warrior.tga");
     sheet->SetSize(17, 6, 69, 44);
-    sheet->AddAnimation(EN_AN_RUN, 6, run, 3.0f); // "Run" animation (starts at frame 6, 8 frames)
+    sheet->AddAnimation(EN_AN_RUN, 6, run, 0.0002f); // "Run" animation (starts at frame 6, 8 frames)
 
     // Initialize warriors
     for (int i = 0; i < 10; ++i) {

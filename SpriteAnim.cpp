@@ -18,6 +18,7 @@ void SpriteAnim::Create(short _clipStart, short _clipCount, float _clipSpeed)
     m_clipSpeed = _clipSpeed;
     m_clipCurrent = _clipStart;
     m_clipEnd = m_clipStart + m_clipCount;
+    m_elapsedTime = 0.0f;
 }
 
 void SpriteAnim::ClearMemory()
@@ -29,7 +30,15 @@ void SpriteAnim::ClearMemory()
 
 void SpriteAnim::Update(float _d)
 {
-    m_clipCurrent += m_clipSpeed * _d;
+    m_elapsedTime += _d;
+
+    // Calculate the current frame based on elapsed time and animation speed
+    float frameTime = 1.0f / m_clipSpeed; // Time per frame
+    int frameIndex = static_cast<int>(m_elapsedTime / frameTime) % m_clipCount;
+
+    // Set the current frame
+    m_clipCurrent = m_clipStart + frameIndex;
+
     if (m_clipCurrent >= m_clipEnd)
     {
         m_clipCurrent = m_clipStart;
