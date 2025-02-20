@@ -84,8 +84,8 @@ void Level::Render(Renderer* renderer, Timing* timing) {
     for (const auto& warrior : warriors) {
         // Destination rectangle (scaled by 1.8x)
         float scale = 1.8f;
-        float additionalHeight = 150 * (i + 1); // 150, 300, 450, etc.
-        Rect destRect(warrior.x, warrior.y, 69 * scale, additionalHeight + (44 * scale));
+        float additionalHeight = (i + 1);
+        Rect destRect(warrior.x, warrior.y + additionalHeight, warrior.x + 69 * scale, warrior.y + additionalHeight + (44 * scale));
 
         // Render the warrior with the current frame
         renderer->RenderTexture(sheet, sheet->Update(EN_AN_RUN, warrior.currentFrame), destRect);
