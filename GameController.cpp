@@ -27,7 +27,7 @@ void GameController::RunGame() {
     SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
     SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
 
-    // Initialize the first level
+    currentLevel = new Level(1);
     currentLevel->Initialize(r);
 
     while (m_sdlEvent.type != SDL_QUIT) {
@@ -45,7 +45,7 @@ void GameController::RunGame() {
 
             // Load the next level
             if (!nextLevel) {
-                nextLevel = new Level();
+                nextLevel = new Level(2);
                 nextLevel->Initialize(r);
             }
 

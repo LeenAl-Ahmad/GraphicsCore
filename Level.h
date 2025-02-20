@@ -9,7 +9,7 @@
 
 class Level {
 public:
-    Level();
+    Level(int levelNumber = 1);
     ~Level();
 
     void Initialize(Renderer* renderer);
@@ -23,6 +23,7 @@ private:
     SpriteSheet* sheet;
     Uint32 startTime; 
     bool isCompleted;     
+    int levelNumber;
 };
 
 #endif // LEVEL_H

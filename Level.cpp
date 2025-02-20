@@ -1,6 +1,6 @@
 #include "Level.h"
 
-Level::Level() : font(nullptr), sheet(nullptr), startTime(0), isCompleted(false) {}
+Level::Level(int levelNumber) : font(nullptr), sheet(nullptr), startTime(0), isCompleted(false), levelNumber(levelNumber) {}
 
 Level::~Level() {
     if (sheet) {
@@ -39,7 +39,14 @@ void Level::Update(float deltaTime) {
 
 void Level::Render(Renderer* renderer, Timing* timing) {
     // Clear screen
-    renderer->SetDrawColor(Color(255, 255, 255, 255));
+    if (levelNumber == 1) {
+        // Grey background for the first level
+        renderer->SetDrawColor(Color(128, 128, 128, 255));
+    }
+    else if (levelNumber == 2) {
+        // Light-green background for the second level
+        renderer->SetDrawColor(Color(0, 128, 0, 255));
+    }
     renderer->ClearScreen();
 
     // Render animations
