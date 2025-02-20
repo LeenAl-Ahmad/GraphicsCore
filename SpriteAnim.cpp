@@ -27,9 +27,9 @@ void SpriteAnim::ClearMemory()
     m_clipCurrent = 0;
 }
 
-void SpriteAnim::Update()
+void SpriteAnim::Update(float _d)
 {
-    m_clipCurrent += m_clipSpeed;
+    m_clipCurrent += m_clipSpeed * _d;
     if (m_clipCurrent >= m_clipEnd)
     {
         m_clipCurrent = m_clipStart;
