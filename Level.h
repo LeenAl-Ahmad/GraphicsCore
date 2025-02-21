@@ -14,6 +14,8 @@ public:
 
     void Initialize(Renderer* renderer);
     void Update(float deltaTime);
+    void UpdateWarriors(float deltaTime);
+    void UpdateRocks(float deltaTime);
     void Render(Renderer* renderer, Timing* timing);
     bool IsComplete();
     
