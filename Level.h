@@ -7,7 +7,7 @@
 #include "Timing.h"
 #include "TTFont.h"
 
-class Level {
+class Level : public  SpriteSheet{
 public:
     Level(int levelNumber = 1); // Constructor with default level number
     ~Level();
@@ -16,8 +16,9 @@ public:
     void Update(float deltaTime);
     void Render(Renderer* renderer, Timing* timing);
     bool IsComplete();
-    void Save(const std::string& filename);
-    void Load(const std::string& filename);
+    
+    void Serialize(std::ostream& _stream) override;
+    void Deserialize(std::istream& _stream) override;
 
 private:
     TTFont* font;

@@ -19,7 +19,7 @@ void Renderer::Initialize(int _xResolution, int _yResolution)
 {
     M_ASSERT(SDL_Init(SDL_INIT_EVERYTHING) >= 0, "");
     m_window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        _xResolution, _yResolution, SDL_WINDOW_SHOWN);
+        _xResolution, _yResolution, SDL_WINDOW_FULLSCREEN);
     M_ASSERT(m_window != nullptr, "Failed to initialize SDL window.");
 
     m_renderer = SDL_CreateRenderer(Renderer::Instance().GetWindow(), -1, 0);
@@ -140,7 +140,7 @@ void Renderer::RenderTexture(Texture* _texture, Rect _rect)
     m_destRect.y = _rect.Y1;
     m_destRect.w = _rect.X2 - _rect.X1;
     m_destRect.h = _rect.Y2 - _rect.Y1;
-    M_ASSERT(((SDL_RenderCopyEx(m_renderer, GetSDLTexture(_texture), 
+    M_ASSERT(((SDL_RenderCopyEx(m_renderer, GetSDLTexture(_texture),
         NULL, &m_destRect, 0, NULL, SDL_FLIP_VERTICAL)) >= 0),
         "Could not rendertexture");
 }

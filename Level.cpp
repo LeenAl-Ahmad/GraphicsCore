@@ -3,7 +3,6 @@
 Level::Level(int levelNumber) : font(nullptr), sheet(nullptr), startTime(0), isCompleted(false), levelNumber(levelNumber) {}
 
 Level::~Level() {
-    // Do NOT delete sheet manually, it's managed by the object pool
     sheet = nullptr;
 
     if (font) {
@@ -12,31 +11,25 @@ Level::~Level() {
     }
 }
 
-void Level::Initialize(Renderer* renderer) {
-    // Initialize font
+void Level::Initialize(Renderer* renderer) 
+{
     font = new TTFont();
     font->Initialize(20);
 
-    if (!SpriteSheet::Pool) {
-        std::cerr << "Error: SpriteSheet::Pool is null!" << std::endl;
-        return;
-    }
-
-    // Initialize warrior sprite sheet (for Level 1)
+    // Initialize warrior (for Level 1)
     sheet = SpriteSheet::Pool->GetResource();
     sheet->Load("./Assets/Textures/Warrior.tga");
     sheet->SetSize(17, 6, 69, 44);
-    sheet->AddAnimation(EN_AN_RUN, 6, 8, 0.0002f); // "Run" animation
-    sheet->AddAnimation(EN_AN_DEATH, 27, 11, 0.0002f); // "Death" animation
+    sheet->AddAnimation(EN_AN_RUN, 6, 8, 0.0003);
+    sheet->AddAnimation(EN_AN_DEATH, 27, 11, 0.0004);
 
     if (levelNumber == 1) {
-        // Initialize warriors for Level 1
         for (int i = 0; i < 10; ++i) {
             Warrior warrior;
             warrior.y = 10 + i * 100; // Y positions: 10, 110, 210, etc.
-            warrior.x = 0; // Start at the left of the screen
+            warrior.x = 0; 
             warrior.speed = 80 + (rand() % 21); // Random speed between 80 and 100
-            warrior.animationSpeed = 4.8f + (warrior.speed - 80) * (1.2f / 20); // Animation speed scales with running speed
+            warrior.animationSpeed = 4.8f + (rand() % (int)(warrior.speed - 80)); // Animation speed scales with running speed
             warrior.currentFrame = sheet->GetCurrentClip(EN_AN_RUN); // Start at frame 0
             warrior.state = 0; // Alive
             warrior.deathAnimationTime = 0.0f; // No death animation yet
@@ -45,34 +38,33 @@ void Level::Initialize(Renderer* renderer) {
         }
     }
     else if (levelNumber == 2) {
-        // Initialize rock sprite sheet (for Level 2)
+        // Initialize (for Level 2)
         rockSheet = SpriteSheet::Pool->GetResource();
         rockSheet->Load("./Assets/Textures/Rock.tga");
         rockSheet->SetSize(1, 4, 20, 22);
         rockSheet->AddAnimation(EN_AN_ROCK_FALL, 0, 4, 0.0002f);
 
-        // Initialize rocks for Level 2
         for (int i = 0; i < 10; ++i) {
             Rock rock;
-            rock.x = 50 + i * 100; // X positions: 50, 150, 250, etc.
-            rock.y = 0; // Start at the top of the screen
+            rock.x =((1920 - 2 * 50) / 9)* i; // X positions: 50, 150, 250, etc...
+            rock.y = 0;
             rock.speed = 80 + (rand() % 21); // Random speed between 80 and 100
-            rock.animationSpeed = 4.8f + (rock.speed - 80) * (1.2f / 20); // Animation speed scales with falling speed
-            rock.currentFrame = 0; // Start at frame 0
+            rock.animationSpeed = 4.8f + (rock.speed - 80) * (1.2f / 20);
+            rock.currentFrame = 0; 
             rocks.push_back(rock);
         }
 
-        // Initialize warriors for Level 2
+        // Initialize warriors 
         for (int i = 0; i < 10; ++i) {
             Warrior warrior;
-            warrior.y = 10 + i * 100; // Y positions: 10, 110, 210, etc.
-            warrior.x = 0; // Start at the left of the screen
-            warrior.speed = 80 + (rand() % 21); // Random speed between 80 and 100
-            warrior.animationSpeed = 4.8f + (warrior.speed - 80) * (1.2f / 20); // Animation speed scales with running speed
-            warrior.currentFrame = sheet->GetCurrentClip(EN_AN_RUN); // Start at frame 0
-            warrior.state = 0; // Alive
-            warrior.deathAnimationTime = 0.0f; // No death animation yet
-            warrior.deathAnimationFrame = 0; // Start at frame 0 of death animation
+            warrior.y = 10 + i * 100; 
+            warrior.x = 0;
+            warrior.speed = 80 + (rand() % 21); 
+            warrior.animationSpeed = 4.8f + (warrior.speed - 80) * (1.2f / 20); 
+            warrior.currentFrame = sheet->GetCurrentClip(EN_AN_RUN); 
+            warrior.state = 0;
+            warrior.deathAnimationTime = 0.0f; 
+            warrior.deathAnimationFrame = 0;
             warriors.push_back(warrior);
         }
     }
@@ -83,11 +75,10 @@ void Level::Initialize(Renderer* renderer) {
 }
 
 void Level::Update(float deltaTime) {
-    // Update game time
     gameTime = (SDL_GetTicks() - startTime) / 1000;
 
     if (levelNumber == 1) {
-        // Update warrior positions and frames for Level 1
+        
         for (auto& warrior : warriors) {
             warrior.x += warrior.speed * deltaTime;
 
@@ -95,47 +86,38 @@ void Level::Update(float deltaTime) {
             float animationTime = gameTime * warrior.animationSpeed;
             warrior.currentFrame = static_cast<int>(animationTime) % 8;
 
-            // Check if the warrior has gone off-screen
-            if (warrior.x > 800) { // Assuming screen width is 800
-                isCompleted = true; // Level is complete when the first warrior goes off-screen
+            if (warrior.x > 1920) {
+                isCompleted = true; 
                 break;
             }
         }
     }
+    
     else if (levelNumber == 2) {
-        // Update warrior positions and frames for Level 2
+        
         for (auto it = warriors.begin(); it != warriors.end(); ) {
-            if (it->state == 0) { // Warrior is alive
+            if (it->state == 0) { //alive
                 it->x += it->speed * deltaTime;
-
-                // Calculate animation frame based on elapsed time and animation speed
                 float animationTime = gameTime * it->animationSpeed;
                 it->currentFrame = static_cast<int>(animationTime) % 8;
-
-                // Check if the warrior has gone off-screen
-                if (it->x > 1920) { // Assuming screen width is 800
-                    isCompleted = true; // Level is complete when the first warrior goes off-screen
+                if (it->x > 1920) {
+                    isCompleted = true; 
                     break;
                 }
 
                 ++it;
             }
-            else if (it->state == 1) { // Warrior is dying
-                // Update death animation time
+            else if (it->state == 1) { // dying
+
                 it->deathAnimationTime += deltaTime;
-
-                // Calculate death animation frame
                 it->deathAnimationFrame = static_cast<int>(it->deathAnimationTime * it->animationSpeed);
-
-                // Check if death animation is complete (11 frames)
+                //(11 frames)
                 if (it->deathAnimationFrame >= 11) {
-                    it->state = 2; // Mark warrior as dead
+                    it->state = 2; 
                 }
-
                 ++it;
             }
-            else if (it->state == 2) { // Warrior is dead
-                // Remove the warrior from the level
+            else if (it->state == 2) { // dead
                 it = warriors.erase(it);
             }
         }
@@ -184,14 +166,42 @@ void Level::Update(float deltaTime) {
             if (it != rocks.end() && it->y > 1080) { // Assuming screen height is 600
                 isCompleted = true; // Level is complete when the first rock goes off-screen
                 break;
+           
             }
         }
     }
 
-    // Auto-save after 5 seconds
-    if (!autoSaved && gameTime >= 5) {
-        Save("Level1.bin");
-        autoSaved = true;
+    if (!autoSaved && levelNumber == 1 && gameTime >= 5) {
+        std::ofstream outFile("Level1.bin", std::ios::binary);
+        if (outFile.is_open()) {
+            Serialize(outFile);
+            outFile.close();
+            autoSaved = true;
+
+            std::ifstream inFile("Level1.bin", std::ios::binary);
+            if (inFile.is_open()) {
+                Deserialize(inFile);
+                inFile.close();
+            }
+        }
+    }
+    if (!autoSaved && levelNumber == 2 && gameTime >= 5) {
+        std::ofstream outFile("Level2.bin", std::ios::binary);
+        if (outFile.is_open()) {
+            Serialize(outFile);
+            outFile.close();
+            autoSaved = true;
+
+            std::ifstream inFile("Level2.bin", std::ios::binary);
+            if (inFile.is_open()) {
+                Deserialize(inFile);
+                inFile.close();
+            }
+        }
+    }
+    if (isCompleted && levelNumber == 2) {
+        SDL_Quit();
+        exit(0);
     }
 }
 
@@ -205,14 +215,11 @@ void Level::Render(Renderer* renderer, Timing* timing) {
 
     renderer->ClearScreen();
 
-    // Render warriors for both Level 1 and Level 2
     int i = 0;
     for (const auto& warrior : warriors) {
-        // Destination rectangle (scaled by 1.8x)
+        // scaled by 1.8x
         float scale = 1.8f;
         Rect destRect(warrior.x, warrior.y , warrior.x + 69 * scale, warrior.y  + (44 * scale));
-
-        // Render the warrior with the current frame
         if (warrior.state == 0) { // Alive
             renderer->RenderTexture(sheet, sheet->Update(EN_AN_RUN, warrior.currentFrame), destRect);
         }
@@ -226,11 +233,8 @@ void Level::Render(Renderer* renderer, Timing* timing) {
     if (levelNumber == 2) {
         // Render rocks for Level 2
         for (const auto& rock : rocks) {
-            // Destination rectangle (scaled by 1.0x)
             float scale = 1.0f;
             Rect destRect(rock.x, rock.y, rock.x + 20 * scale, rock.y + (22 * scale));
-
-            // Render the rock with the current frame
             renderer->RenderTexture(rockSheet, rockSheet->Update(EN_AN_ROCK_FALL, rock.currentFrame), destRect);
         }
     }
@@ -253,61 +257,45 @@ bool Level::IsComplete() {
     return isCompleted; // Implement level completion logic
 }
 
-void Level::Save(const std::string& filename) {
-    std::ofstream outFile(filename, std::ios::binary);
-    if (outFile.is_open()) {
-        // Save warrior data (for both Level 1 and Level 2)
-        for (const auto& warrior : warriors) {
-            outFile.write(reinterpret_cast<const char*>(&warrior), sizeof(Warrior));
-        }
+void Level::Serialize(std::ostream& _stream){
+    _stream.write(reinterpret_cast<const char*>(&levelNumber), sizeof(levelNumber));
 
-        if (levelNumber == 2) {
-            // Save rock data (for Level 2)
-            for (const auto& rock : rocks) {
-                outFile.write(reinterpret_cast<const char*>(&rock), sizeof(Rock));
-            }
-        }
-
-        // Save game time
-        outFile.write(reinterpret_cast<const char*>(&gameTime), sizeof(gameTime));
-
-        outFile.close();
-        std::cout << "Level saved to " << filename << std::endl;
+    size_t warriorCount = warriors.size();
+    _stream.write(reinterpret_cast<const char*>(&warriorCount), sizeof(warriorCount));
+    for (const auto& warrior : warriors) {
+        _stream.write(reinterpret_cast<const char*>(&warrior), sizeof(Warrior));
     }
-    else {
-        std::cerr << "Failed to save level to " << filename << std::endl;
+    size_t rockCount = rocks.size();
+    _stream.write(reinterpret_cast<const char*>(&rockCount), sizeof(rockCount));
+    for (const auto& rock : rocks) {
+        _stream.write(reinterpret_cast<const char*>(&rock), sizeof(Rock));
     }
+
+    _stream.write(reinterpret_cast<const char*>(&gameTime), sizeof(gameTime));
+    _stream.write(reinterpret_cast<const char*>(&isCompleted), sizeof(isCompleted));
 }
 
-void Level::Load(const std::string& filename) {
-    std::ifstream inFile(filename, std::ios::binary);
-    if (inFile.is_open()) {
-        // Load warrior data (for both Level 1 and Level 2)
-        warriors.clear();
-        for (int i = 0; i < 10; ++i) {
-            Warrior warrior;
-            inFile.read(reinterpret_cast<char*>(&warrior), sizeof(Warrior));
-            warriors.push_back(warrior);
-        }
+void Level::Deserialize(std::istream& _stream) {
+    _stream.read(reinterpret_cast<char*>(&levelNumber), sizeof(levelNumber));
 
-        if (levelNumber == 2) {
-            // Load rock data (for Level 2)
-            rocks.clear();
-            for (int i = 0; i < 10; ++i) {
-                Rock rock;
-                inFile.read(reinterpret_cast<char*>(&rock), sizeof(Rock));
-                rocks.push_back(rock);
-            }
-        }
-
-        // Load game time
-        inFile.read(reinterpret_cast<char*>(&gameTime), sizeof(gameTime));
-
-        inFile.close();
-        std::cout << "Level loaded from " << filename << std::endl;
+    size_t warriorCount;
+    _stream.read(reinterpret_cast<char*>(&warriorCount), sizeof(warriorCount));
+    warriors.clear();
+    for (size_t i = 0; i < warriorCount; ++i) {
+        Warrior warrior;
+        _stream.read(reinterpret_cast<char*>(&warrior), sizeof(Warrior));
+        warriors.push_back(warrior);
     }
-    else {
-        std::cerr << "Failed to load level from " << filename << std::endl;
+
+    size_t rockCount;
+    _stream.read(reinterpret_cast<char*>(&rockCount), sizeof(rockCount));
+    rocks.clear();
+    for (size_t i = 0; i < rockCount; ++i) {
+        Rock rock;
+        _stream.read(reinterpret_cast<char*>(&rock), sizeof(Rock));
+        rocks.push_back(rock);
     }
+
+    _stream.read(reinterpret_cast<char*>(&gameTime), sizeof(gameTime));
+    _stream.read(reinterpret_cast<char*>(&isCompleted), sizeof(isCompleted));
 }
-
