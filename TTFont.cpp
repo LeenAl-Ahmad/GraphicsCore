@@ -7,6 +7,11 @@ TTFont::TTFont()
     destRect = { };
 }
 
+TTFont::~TTFont()
+{
+    Shutdown();
+}
+
 void TTFont::Initialize(int _pointSize)
 {
     M_ASSERT((TTF_Init() >= 0), "Unable to initialize SDL TTF.");
@@ -20,6 +25,8 @@ void TTFont::Shutdown()
 
 void TTFont::Write(SDL_Renderer* _renderer, const char* _text, SDL_Color _color, SDL_Point _pos)
 {
+    if (strlen(_text) == 0)return;
+
     SDL_Surface* surface;
     surface = TTF_RenderUTF8_Blended(m_font, _text, _color);
 
@@ -27,7 +34,8 @@ void TTFont::Write(SDL_Renderer* _renderer, const char* _text, SDL_Color _color,
     texture = SDL_CreateTextureFromSurface(_renderer, surface);
 
     SDL_Rect destRect = { _pos.x, _pos.y, surface->w, surface->h };
-    M_ASSERT((SDL_RenderCopyEx(_renderer, texture, nullptr, &destRect, 0, nullptr, SDL_FLIP_NONE)) == 0, "Could not render texture");
+    M_ASSERT((SDL_RenderCopyEx(_renderer, texture, nullptr, &destRect, 0, 
+        nullptr, SDL_FLIP_NONE)) == 0, "Could not render texture");
 
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
