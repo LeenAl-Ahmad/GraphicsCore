@@ -16,9 +16,12 @@ class Renderer : public Singleton<Renderer>
         SDL_Window* GetWindow() { return m_window; }
         SDL_Renderer* GetRenderer() { return m_renderer; }
         SDL_Texture* GetSDLTexture(Texture* _t);
+        vector<SDL_DisplayMode>& GetResolutions() { return m_resolutions; }
 
         // Methods
-        void Initialize(int _xResolution, int _yResolution);
+        void Initialize();
+        void ChangeDisplayMode(SDL_DisplayMode* _m);
+        void EnumerateDisplayMode();
         Point GetWindowSize();
         void SetDrawColor(Color _color);
         void ClearScreen();
@@ -42,6 +45,7 @@ class Renderer : public Singleton<Renderer>
         SDL_Surface* m_surface;
         SDL_Rect m_viewPort;
         map<string, SDL_Texture*> m_texture;
+        vector<SDL_DisplayMode> m_resolutions;
     };
 
 #endif // RENDERER_H

@@ -12,6 +12,7 @@
 #include <cinttypes>
 #include <stdio.h>
 #include <thread>
+#include <sstream>
 #include <map>
 #include <SDL.h>
 #include <SDL_ttf.h>

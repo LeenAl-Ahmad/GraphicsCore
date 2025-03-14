@@ -14,8 +14,7 @@ Renderer::~Renderer()
 {
     Shutdown();
 }
-
-void Renderer::Initialize(int _xResolution, int _yResolution)
+/*void Renderer::Initialize(int _xResolution, int _yResolution)
 {
     M_ASSERT(SDL_Init(SDL_INIT_EVERYTHING) >= 0, "");
     m_window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -24,8 +23,7 @@ void Renderer::Initialize(int _xResolution, int _yResolution)
 
     m_renderer = SDL_CreateRenderer(Renderer::Instance().GetWindow(), -1, 0);
     M_ASSERT(m_renderer != nullptr, "Failed to initialize SDL renderer.");
-}
-
+}*/
 void Renderer::Shutdown()
 {
     for (auto it = m_texture.begin(); it != m_texture.end(); it++)
@@ -182,4 +180,38 @@ void Renderer::RenderTexture(SDL_Texture* _texture, Rect _srect, Rect _rect, dou
     M_ASSERT(((SDL_RenderCopyEx(m_renderer, _texture,
         &m_srect, &m_destRect, _a, nullptr, SDL_FLIP_NONE)) >= 0),
         "Could not render texture");
+}
+
+void Renderer::Initialize()
+{
+    M_ASSERT((SDL_Init(SDL_INIT_EVERYTHING) >= 0), "");
+    SDL_GetDisplayBounds(0, &m_srect);
+    m_window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+        m_srect.w, m_srect.y, SDL_WINDOW_FULLSCREEN);
+    M_ASSERT(m_window != nullptr, "Failed to initialize SDL window.");
+    m_renderer = SDL_CreateRenderer(Renderer::Instance().GetWindow(), -1, 0);
+    M_ASSERT(m_renderer != nullptr, "Failed to intialize SDL renderer.");
+}
+
+void Renderer::EnumerateDisplayMode()
+{
+    int display_Count = SDL_GetNumVideoDisplays();
+    for (int display_index = 0; display_index <= display_Count; display_index++)
+    {
+        int mode_count = SDL_GetNumDisplayModes(display_index);
+        for (int mode_index=0; mode_index <= mode_count; mode_index++)
+        {
+            SDL_DisplayMode mode = { SDL_PIXELFORMAT_UNKNOWN, 0, 0, 0, 0 };
+            if (SDL_GetDisplayMode(display_index, mode_index, &mode) == 0)
+            {
+                m_resolutions.push_back(mode);
+            }
+        }
+    }
+}
+
+void Renderer::ChangeDisplayMode(SDL_DisplayMode* _m)
+{
+    M_ASSERT(SDL_SetWindowDisplayMode(m_window, _m) == 0, "Failed to set resolution");
+    SDL_SetWindowSize(m_window, _m->w, _m->h);
 }
