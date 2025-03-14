@@ -3,6 +3,7 @@
 #include "SpriteSheet.h"
 #include "TTFont.h"
 #include "Timing.h"
+#include "RenderTarget.h"
 
 GameController::GameController()
 {
@@ -19,8 +20,6 @@ void GameController::RunGame()
     Renderer* r = &Renderer::Instance();
     Timing* t = &Timing::Instance();
     r->Initialize(800, 600);
-    
-    Point ws = r->GetWindowSize();
 
     TTFont* font = new TTFont();
     font->Initialize(20);
@@ -28,15 +27,15 @@ void GameController::RunGame()
     // Initialize pools
     SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
     SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
-
-    // Load and serialize SpriteSheet
     SpriteSheet* sheet = SpriteSheet::Pool->GetResource();
     sheet->Load("./Assets/Textures/Warrior.tga");
     sheet->SetSize(17, 6, 69, 44);
     sheet->AddAnimation(EN_AN_IDLE, 0, 6, 6.0f);
     sheet->AddAnimation(EN_AN_RUN, 6, 8, 6.0f);
-    sheet->SetBlendMode(SDL_BLENDMODE_BLEND);
-    sheet->SetBlandAlpha(128);
+    
+    Point ws = r->GetWindowSize();
+    RenderTarget* rt = new RenderTarget();
+    rt->Create(ws.X, ws.Y);
     /*ofstream writeStream("resource.bin", ios::out | ios::binary);
     sheet->Serialize(writeStream);
     writeStream.close();
@@ -59,6 +58,7 @@ void GameController::RunGame()
     while (m_sdlEvent.type != SDL_QUIT)
     {
         t->Tick();
+        rt->Start();
 
         SDL_PollEvent(&m_sdlEvent);
         r->SetDrawColor(Color(255, 255, 255, 255));
@@ -75,12 +75,17 @@ void GameController::RunGame()
         std::string fps = "Frames Per Second: " + std::to_string(t->GetFPS());
         font->Write(r->GetRenderer(), fps.c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 0, 0 });
 
+        rt->stop();
+        r->SetDrawColor(Color(0, 0, 0,255));
+        r->ClearScreen();
+        rt->Render(t->GetDeltaTime());
         SDL_RenderPresent(r->GetRenderer());
         
         t->CapFPS();
     }
 
     // Clean up
+    delete rt;
     delete SpriteAnim::Pool;
     delete SpriteSheet::Pool;
 

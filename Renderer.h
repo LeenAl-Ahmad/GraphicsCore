@@ -30,6 +30,7 @@ class Renderer : public Singleton<Renderer>
         void RenderTexture(Texture* _t, Point _p);
         void RenderTexture(Texture* _texture, Rect _rect);
         void RenderTexture(Texture* _texture, Rect _srect, Rect _destRect);
+        void RenderTexture(SDL_Texture* _texture, Rect _srect, Rect _destRect, double _angle);
         void Shutdown();
 
     private:

@@ -163,3 +163,23 @@ void Renderer::RenderTexture(Texture* _texture, Rect _srect, Rect _rect)
         &m_srect, &m_destRect, 0, NULL, SDL_FLIP_VERTICAL)) >= 0),
         "Could not rendertexture");
 }
+
+void Renderer::RenderTexture(SDL_Texture* _texture, Rect _srect, Rect _rect, double _a)
+{
+    SDL_Point size;
+    SDL_QueryTexture(_texture, NULL , NULL, &size.x, &size.y);
+
+    m_destRect.x = _rect.X1;
+    m_destRect.y = _rect.Y1;
+    m_destRect.w = _rect.X2 - _rect.X1;
+    m_destRect.h = _rect.Y2 - _rect.Y1;
+
+    m_srect.x = _srect.X1;
+    m_srect.y = _srect.Y2;
+    m_srect.w = _srect.X2 - _srect.X1;
+    m_srect.h = _srect.Y2 - _srect.Y1;
+
+    M_ASSERT(((SDL_RenderCopyEx(m_renderer, _texture,
+        &m_srect, &m_destRect, _a, nullptr, SDL_FLIP_NONE)) >= 0),
+        "Could not render texture");
+}
