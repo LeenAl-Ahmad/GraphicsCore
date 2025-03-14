@@ -8,6 +8,7 @@ Timing::Timing()
 	m_currentTime = SDL_GetTicks();
 	m_lastTime = m_currentTime;
 	m_fpsStart = m_currentTime;
+	SetFPS(60);
 }
 
 void Timing::Tick()
@@ -25,4 +26,19 @@ void Timing::Tick()
 		m_fpsCount++;
 	}
 	m_lastTime = m_currentTime;
+}
+
+void Timing::SetFPS(int _fps)
+{
+	m_targetFPS = _fps;
+	m_ticksPerFrame = 1000 / m_targetFPS;
+}
+
+void Timing::CapFPS()
+{
+	unsigned int delta = SDL_GetTicks() - m_currentTime;
+	if (delta < m_ticksPerFrame)
+	{
+		SDL_Delay(m_ticksPerFrame - delta);
+	}
 }
