@@ -87,23 +87,25 @@ SDL_Texture* Renderer::GetSDLTexture(Texture* _texture)
     // If texture has already been created, return created texture
     Asset* asset = _texture->GetData();
     string guid = asset->GetGUID();
-    if (m_texture.count(guid) != 0)
-        return m_texture[guid];
-
-    // Otherwise, create the GPU texture
-    ImageInfo* ii = _texture->GetImageInfo();
-    m_surface = SDL_CreateRGBSurfaceFrom(asset->GetData() + _texture->GetImageInfo()->DataOffset,
+    if (m_texture.count(guid) == 0)
+    {
+        // Otherwise, create the GPU texture
+        ImageInfo* ii = _texture->GetImageInfo();
+        m_surface = SDL_CreateRGBSurfaceFrom(asset->GetData() + _texture->GetImageInfo()->DataOffset,
         ii->Width, ii->Height, ii->BitsPerPixel,
         ii->Width * ii->BitsPerPixel / 8,
         0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
-    SDL_FreeSurface(m_surface);
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
+        SDL_FreeSurface(m_surface);
 
-    m_surface = nullptr;
-    m_texture[guid] = texture;
-
-    return texture;
+        m_surface = nullptr;
+        m_texture[guid] = texture; 
+    }
+    
+    SDL_SetTextureBlendMode(m_texture[guid], _texture->GetBlendMode());
+    SDL_SetTextureAlphaMod(m_texture[guid], _texture->GetBlendAlpha());
+    return m_texture[guid];
 }
 
 void Renderer::RenderTexture(Texture* _texture, Point _point)
