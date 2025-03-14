@@ -30,7 +30,7 @@ void SpriteAnim::ClearMemory()
 void SpriteAnim::Update()
 {
     m_clipCurrent += m_clipSpeed;
-    if (m_clipCurrent >= m_clipEnd)
+    if (m_clipCurrent > m_clipEnd)
     {
         m_clipCurrent = m_clipStart;
     }
@@ -49,7 +49,11 @@ void SpriteAnim::Deserialize(std::istream& _stream)
     _stream.read(reinterpret_cast<char*>(&m_clipStart), sizeof(m_clipStart));
     _stream.read(reinterpret_cast<char*>(&m_clipCount), sizeof(m_clipCount));
     _stream.read(reinterpret_cast<char*>(&m_clipSpeed), sizeof(m_clipSpeed));
+
+    // Reset current frame and end frame
+    m_clipCurrent = m_clipStart;
     m_clipEnd = m_clipStart + m_clipCount;
+
     Resource::Deserialize(_stream);
 }
 

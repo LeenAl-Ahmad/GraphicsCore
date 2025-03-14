@@ -71,7 +71,7 @@ void SpriteSheet::Deserialize(std::istream& _stream)
     int count;
     _stream.read(reinterpret_cast<char*>(&count), sizeof(count));
 
-    for (int c = 0; c < count; ++c)
+    for (int c = 0; c < count; c++)
     {
         AnimationNames index;
         _stream.read(reinterpret_cast<char*>(&index), sizeof(index));
