@@ -3,6 +3,8 @@
 
 #include "StandardIncludes.h"
 
+constexpr int MaxEffectChannels = 16;
+
 class SoundEffect;
 class Song;
 
@@ -12,7 +14,7 @@ public:
 	AudioController();
 	virtual ~AudioController();
 
-	string GetCurrentEffect() { return m_currentEffect; }
+	string* GetCurrentEffects() { return m_currentEffects; }
 	string GetMusicTitle() { return m_musicTitle; }
 	string GetMusicLength() { return m_musicLength; }
 
@@ -29,12 +31,12 @@ public:
 	static void CatchChannelDone(int _channel);
 
 private:
-	Mix_Chunk* GetSDLWav(SoundEffect* _effect);
-	Mix_Music* GetSDLMP3(Song* _song);
+	Mix_Chunk* GetSDLSFX(SoundEffect* _effect);
+	Mix_Music* GetSDLMusic(Song* _song);
 
 	map<string, Mix_Chunk*> m_effects;
 	map<string, Mix_Music*> m_songs;
-	string m_currentEffect;
+	string m_currentEffects[MaxEffectChannels];
 	string m_musicLength;
 	string m_musicTitle;
 	Mix_Music* m_currentSong;

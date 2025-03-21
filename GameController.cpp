@@ -10,8 +10,16 @@
 #include "Song.h"
 
 GameController::GameController()
-    : m_quit(false), m_sdlEvent({}), m_renderer(nullptr), m_fArial20(nullptr),
-    m_input(nullptr), m_audio(nullptr), m_effect(nullptr), m_song(nullptr){}
+{
+    m_quit = false;
+    m_sdlEvent = {};
+    m_renderer = nullptr;
+    m_fArial20 = nullptr;
+    m_input = nullptr;
+    m_audio = nullptr;
+    memset(m_effects, 0, sizeof(SoundEffect*) * MaxEffectChannels);
+    m_song = nullptr;
+}
 
 GameController::~GameController()
 {
@@ -27,7 +35,10 @@ void GameController::Initialize()
     m_fArial20 = new TTFont();
     m_fArial20->Initialize(20);
     m_audio = &AudioController::Instance();
-    m_effect = m_audio->LoadEffect("C:/Users/leana/source/repos/GraphicsCore/Assets/Audio/Effects/Whoosh.wav");
+    m_effects[0] = m_audio->LoadEffect("C:/Users/leana/source/repos/GraphicsCore/Assets/Audio/Effects/Whoosh.wav");
+    m_effects[1] = m_audio->LoadEffect("C:/Users/leana/source/repos/GraphicsCore/Assets/Audio/Effects/BeeFlyingLoop.mp3");
+    m_effects[2] = m_audio->LoadEffect("C:/Users/leana/source/repos/GraphicsCore/Assets/Audio/Effects/DistantGunshot.mp3");
+    m_effects[3] = m_audio->LoadEffect("C:/Users/leana/source/repos/GraphicsCore/Assets/Audio/Effects/DrinkSipSwallow.mp3");
     m_song = m_audio->LoadSong("C:/Users/leana/source/repos/GraphicsCore/Assets/Audio/Music/Track1.mp3");
 }
 
@@ -40,7 +51,7 @@ void GameController::HandleInput(SDL_Event _event)
     }
     else if (m_input->KB()->KeyUp(_event, SDLK_p))
     {
-        m_audio->Play(m_effect);
+        m_audio->Play(m_effects[rand() % 4]);
     }
     else if (m_input->KB()->KeyUp(_event, SDLK_a))
     {
@@ -87,59 +98,14 @@ void GameController::RunGame()
             song += " " + to_string((int)m_audio->MusicPosition()) + "/" + m_audio->GetMusicLength();
         }
         m_fArial20->Write(m_renderer->GetRenderer(), song.c_str(), { 0,0,255 }, { 10,10 });
-        m_fArial20->Write(m_renderer->GetRenderer(), ("Current Effect: " + m_audio->GetCurrentEffect()).c_str(), { 0,0,255 }, { 10, 30 });
-
+        for (int count = 0; count < MaxEffectChannels; count++)
+        {
+            string eff = "Effect " + to_string(count) + ": ";
+            eff += m_audio->GetCurrentEffects()[count];
+            m_fArial20->Write(m_renderer->GetRenderer(), eff.c_str(), { 255, 0, 255 }, { 10, 30 + (count * 20) });
+        }
+        
         SDL_RenderPresent(m_renderer->GetRenderer());
     }
-    /*AssetController::Instance().Initialize(10000000); // Allocate 10MB
-    Renderer* r = &Renderer::Instance();
-    Timing* t = &Timing::Instance();
-    r->Initialize();
-    r->EnumerateDisplayMode();
-    r->ChangeDisplayMode(&r->GetResolutions()[8]);
-
-    TTFont* font = new TTFont();
-    font->Initialize(20);
-
-    // Initialize pools
-    SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
-    SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
-    SpriteSheet* sheet = SpriteSheet::Pool->GetResource();
-    sheet->Load("./Assets/Textures/Warrior.tga");
-    sheet->SetSize(17, 6, 69, 44);
-    sheet->AddAnimation(EN_AN_IDLE, 0, 6, 6.0f);
-    sheet->AddAnimation(EN_AN_RUN, 6, 8, 6.0f);
-
-    RenderTarget* rt = new RenderTarget;
-    rt->Create(NATIVE_XRES, NATIVE_YRES);
-
-    // Main game loop
-    while (m_sdlEvent.type != SDL_QUIT)
-    {
-        t->Tick();
-        rt->Start();
-        r->SetDrawColor(Color(255, 255, 255, 255));
-        r->ClearScreen();
-        r->RenderTexture(sheet, sheet->Update(EN_AN_RUN, t->GetDeltaTime()), Rect(0, 150, 69 * 3, 150 + 44 * 3));
-
-        std::string fps = "Frames Per Second: " + std::to_string(t->GetFPS());
-        font->Write(r->GetRenderer(), fps.c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 0, 0 });
-        std::string s = "Frame number: " + std::to_string(sheet->GetCurrentClip(EN_AN_RUN));
-        font->Write(r->GetRenderer(), s.c_str(), SDL_Color{ 0, 255, 0 }, SDL_Point{ 250, 200 });
-
-        rt->stop();
-        r->SetDrawColor(Color(0, 0, 0, 255));
-        r->ClearScreen();
-        rt->Render(t->GetDeltaTime());
-        SDL_RenderPresent(r->GetRenderer()); 
-        t->CapFPS();
-    }
-
-    // Clean up
-    delete rt;
-    delete SpriteAnim::Pool;
-    delete SpriteSheet::Pool;
-    font->Shutdown();
-    r->Shutdown();*/
 }
 
