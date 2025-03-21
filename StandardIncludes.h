@@ -20,6 +20,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL_pixels.h>
+#include <SDL_mixer.h>
 
 // Project headers
 #include "Singleton.h"
