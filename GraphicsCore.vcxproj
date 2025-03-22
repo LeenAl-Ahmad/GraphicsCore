@@ -157,6 +157,7 @@ copy /Y "$(SolutionDir)External\SDL2_mixer-2.6.2\lib\x86\SDL2_mixer.dll" "$(Targ
     <ClCompile Include="TGAReader.cpp" />
     <ClCompile Include="Timing.cpp" />
     <ClCompile Include="TTFont.cpp" />
+    <ClCompile Include="WavDraw.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asset.h" />
@@ -185,6 +186,7 @@ copy /Y "$(SolutionDir)External\SDL2_mixer-2.6.2\lib\x86\SDL2_mixer.dll" "$(Targ
     <ClInclude Include="TGAReader.h" />
     <ClInclude Include="Timing.h" />
     <ClInclude Include="TTFont.h" />
+    <ClInclude Include="WavDraw.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

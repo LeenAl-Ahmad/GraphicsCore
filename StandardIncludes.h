@@ -17,6 +17,7 @@
 #include <thread>
 #include <sstream>
 #include <map>
+#include <algorithm>
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL_pixels.h>

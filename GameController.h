@@ -7,7 +7,7 @@
 class Renderer;
 class TTFont;
 class InputController;
-class AudioController;
+class WavDraw;
 class SoundEffect;
 class Song;
 
@@ -32,8 +32,10 @@ private:
     bool m_quit;
     InputController* m_input;
     AudioController* m_audio;
+    WavDraw* m_wavDraw;
     SoundEffect* m_effects[MaxEffectChannels];
     Song* m_song;
+    float m_zoomY;
 };
 
 #endif // GAME_CONTROLLER_H
