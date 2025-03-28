@@ -4,6 +4,8 @@
 
 #define SDL_MAIN_HANDLED
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #define NATIVE_XRES 1920
 #define NATIVE_YRES 1080
 
@@ -32,12 +34,17 @@
 #include <windows.h>
 #include <direct.h>
 #define M_ASSERT(_cond, _msg) \
-    if (!(_cond)) { OutputDebugStringA(_msg); std::abort(); }
+    if (!(_cond)) { OutputDebugStringA(_msg); std::abort(); glfwTerminate();}
 #define GetCurrentDir _getcwd
 #else
 #include <unistd.h>
 #define GetCurrentDir getcwd
 #endif
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 using namespace std;
 
