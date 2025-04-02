@@ -44,6 +44,9 @@ private:
     SpriteSheet* m_fire;
     SpriteSheet* m_smoke;
     SpriteSheet* m_circle;
+
+    int m_windowWidth;
+    int m_windowHeight;
 };
 
 #endif // GAME_CONTROLLER_H

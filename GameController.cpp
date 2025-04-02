@@ -37,13 +37,22 @@ GameController::~GameController()
 
 void GameController::Initialize()
 {
+    //Setting it to desktop resolution
+    SDL_DisplayMode dm;
+    SDL_GetCurrentDisplayMode(0, &dm);
+    m_windowWidth = dm.w;
+    m_windowHeight = dm.h;
+
     AssetController::Instance().Initialize(10000000); // Allocate 10MB
     m_renderer = &Renderer::Instance();
     m_renderer->Initialize();
+    SDL_SetWindowSize(m_renderer->GetWindow(), m_windowWidth, m_windowHeight);
+    SDL_SetWindowTitle(m_renderer->GetWindow(), "SDLTagYouAreIt");
     m_input = &InputController::Instance();
     m_fArial20 = new TTFont();
     m_fArial20->Initialize(20);
     m_timing = &Timing::Instance();
+    m_timing->SetFPS(80);
     m_physics = &PhysicsController::Instance();
 
     SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
@@ -120,15 +129,15 @@ void GameController::RunGame()
     while (!m_quit)
     {
         m_timing->Tick();
-        m_renderer->SetDrawColor(Color(255, 255, 255, 255));
-        m_renderer->ClearScreen();
 
         while (SDL_PollEvent(&m_sdlEvent) != 0)
         {
             HandleInput(m_sdlEvent);
         }
-
         m_physics->Update(m_timing->GetDeltaTime());
+
+        m_renderer->SetDrawColor(Color(255, 255, 255, 255));
+        m_renderer->ClearScreen();
 
         //m_renderer->RenderTexture(m_fire, m_fire->Update(EN_AN_IDLE, m_timing->GetDeltaTime()), Rect(300, 200, 400, 300));
         Rect r = m_circle->Update(EN_AN_IDLE, m_timing->GetDeltaTime());
@@ -148,10 +157,11 @@ void GameController::RunGame()
         m_fArial20->Write(m_renderer->GetRenderer(), m_physics->ToString().c_str(), SDL_Color{ 0, 0, 255 }, SDL_Point{ 120, 10 });
 
         SDL_RenderPresent(m_renderer->GetRenderer());
-
-        // m_timing->CapFPS();
+        m_timing->CapFPS();
     }
+
     ShutDown();
+
 }
 
 
