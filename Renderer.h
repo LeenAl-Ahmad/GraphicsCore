@@ -32,7 +32,7 @@ class Renderer : public Singleton<Renderer>
         void RenderFillRectangle(Rect _rect);
         void RenderTexture(Texture* _t, Point _p);
         void RenderTexture(Texture* _texture, Rect _rect);
-        void RenderTexture(Texture* _texture, Rect _srect, Rect _destRect);
+        void RenderTexture(Texture* _texture, Rect _srect, Rect _destRect, int _a = 255);
         void RenderTexture(SDL_Texture* _texture, Rect _srect, Rect _destRect, double _angle);
         void Shutdown();
 

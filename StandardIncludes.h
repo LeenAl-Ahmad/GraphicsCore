@@ -3,6 +3,7 @@
 #define STANDARD_INCLUDES_H
 
 #define SDL_MAIN_HANDLED
+#define GLM_ENABLE_EXPERIMENTAL
 
 #define NATIVE_XRES 1920
 #define NATIVE_YRES 1080
@@ -38,6 +39,11 @@
 #include <unistd.h>
 #define GetCurrentDir getcwd
 #endif
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/ext.hpp>
+#include <glm//glm.hpp>
 
 using namespace std;
 

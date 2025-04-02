@@ -34,17 +34,10 @@ void TTFont::Write(SDL_Renderer* _renderer, const char* _text, SDL_Color _color,
     }
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
-    if (!texture) {
-        fprintf(stderr, "SDL_CreateTextureFromSurface failed: %s\n", SDL_GetError());
-        SDL_FreeSurface(surface);
-        return;
-    }
+    
 
     SDL_Rect destRect = { _pos.x, _pos.y, surface->w, surface->h };
     int renderResult = SDL_RenderCopyEx(_renderer, texture, nullptr, &destRect, 0, nullptr, SDL_FLIP_NONE);
-    if (renderResult != 0) {
-        fprintf(stderr, "SDL_RenderCopyEx failed: %s\n", SDL_GetError());
-    }
 
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
