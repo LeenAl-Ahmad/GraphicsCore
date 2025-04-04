@@ -146,6 +146,7 @@ copy /Y "$(SolutionDir)External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"<
     <ClCompile Include="GraphicsCore.cpp" />
     <ClCompile Include="InputController.cpp" />
     <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PhysicsController.cpp" />
@@ -162,6 +163,7 @@ copy /Y "$(SolutionDir)External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"<
     <ClCompile Include="TGAReader.cpp" />
     <ClCompile Include="Timing.cpp" />
     <ClCompile Include="TTFont.cpp" />
+    <ClCompile Include="Unito.cpp" />
     <ClCompile Include="WavDraw.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +176,7 @@ copy /Y "$(SolutionDir)External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"<
     <ClInclude Include="GameController.h" />
     <ClInclude Include="InputController.h" />
     <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="objPool.h" />
     <ClInclude Include="Particle.h" />
@@ -194,6 +197,7 @@ copy /Y "$(SolutionDir)External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"<
     <ClInclude Include="TGAReader.h" />
     <ClInclude Include="Timing.h" />
     <ClInclude Include="TTFont.h" />
+    <ClInclude Include="Unito.h" />
     <ClInclude Include="WavDraw.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

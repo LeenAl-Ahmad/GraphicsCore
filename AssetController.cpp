@@ -21,7 +21,7 @@ AssetController::~AssetController() {
 void AssetController::Clear() {
 	// Remove all asset objects from the object pool
 	for (auto const& x : m_assets) {
-		Asset::Pool->ReleaseResource(x.second);
+		Asset::Pool->ReturnResource(x.second);
 	}
 
 	if (Asset::Pool != nullptr) {

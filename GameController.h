@@ -1,52 +1,35 @@
 #ifndef GAME_CONTROLLER_H
 #define GAME_CONTROLLER_H
 
-#include "StandardIncludes.h"
-#include "AudioController.h"
-
-class Renderer;
-class TTFont;
-class InputController;
-class WavDraw;
-class SoundEffect;
-class Song;
-class PhysicsController;
-class Timing;
-class SpriteSheet;
+#include "Level.h"
+#include "Renderer.h"
+#include "Timing.h"
+#include "TTFont.h"
 
 class GameController : public Singleton<GameController>
 {
 public:
-    // Constructors/Destructors
     GameController();
-    virtual ~GameController();
+    ~GameController();
 
-    // Methods
-    void RunGame();
     void Initialize();
-    void HandleInput(SDL_Event _event);
+    void RunGame();
     void ShutDown();
+    void HandleInput(SDL_Event _event);
+
+    void SyncPhysicsToUnits();
 
 private:
-    // Members
-    SDL_Event m_sdlEvent;
-    Renderer* m_renderer;
-    TTFont* m_fArial20;
-    bool m_quit;
+    Renderer* m_renderer = nullptr;
+    Level* m_currentLevel = nullptr;
+    Timing* timing;
     InputController* m_input;
-    AudioController* m_audio;
-    WavDraw* m_wavDraw;
-    SoundEffect* m_effects[MaxEffectChannels];
-    Song* m_song;
-    float m_zoomY;
-    Timing* m_timing;
     PhysicsController* m_physics;
-    SpriteSheet* m_fire;
-    SpriteSheet* m_smoke;
-    SpriteSheet* m_circle;
+    bool m_quit;
+    TTFont* m_fpsFont;
+    float m_currentFPS;
 
-    int m_windowWidth;
-    int m_windowHeight;
+    std::map<RigidBody*, Unit*> m_physicsToUnitMap;
 };
 
-#endif // GAME_CONTROLLER_H
+#endif

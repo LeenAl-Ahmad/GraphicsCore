@@ -39,7 +39,7 @@ public:
         }
     }
 
-    void ReleaseResource(T* _object)
+    void ReturnResource(T* _object)
     {
 
         m_available.push_back(_object);

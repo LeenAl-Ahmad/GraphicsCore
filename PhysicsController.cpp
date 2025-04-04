@@ -50,7 +50,7 @@ void PhysicsController::Update(float _deltaTime)
         p->Update(_deltaTime, m_force);
         if (!p->GetDead()) continue;
         p->Reset();
-        Particle::Pool->ReleaseResource(p);
+        Particle::Pool->ReturnResource(p);
         m_particles.erase(m_particles.begin() + count);
         count--;
     }
