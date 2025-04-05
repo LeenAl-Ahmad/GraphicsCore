@@ -58,9 +58,9 @@ void Level::Render(Renderer* renderer, Timing* timing) {
         SDL_Texture* warriorTexture = renderer->GetSDLTexture(player->GetWarrior());
 
         // Render with rotation
-        renderer->RenderTexture(warriorTexture,
+        renderer->RenderTexture(player->GetWarrior(),
             srcRect,
-            destRect,
-            (0,0));
+            destRect, 255
+        );
     }
 }

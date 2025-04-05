@@ -33,51 +33,7 @@ void GameController::Initialize() {
 
 void GameController::ShutDown() {
     delete m_fpsFont;
-}
 
-void GameController::HandleInput(SDL_Event event) {
-    // 1. Safety checks
-    if (!m_input || !m_input->KB() || !m_input->MS() ) {
-        return;
-    }
-
-    // 2. Quit handling
-    if (event.type == SDL_QUIT || m_input->KB()->KeyUp(event, SDLK_ESCAPE)) {
-        m_quit = true;
-        return;
-    }
-
-    // 3. Unit spawning
-    if (m_input->KB()->KeyDown(event, SDLK_a)) {
-        // Calculate random position/direction
-        glm::vec2 pos(16 + rand() % (1920 - 32), 16 + rand() % (1080 - 32));
-        glm::vec2 dir = glm::normalize(
-            glm::vec2(rand() % 1920, rand() % 1080) - pos
-        ) * 200.0f;
-
-
-        // Create physics body
-        RigidBody* body = m_physics->AddRigidBody(pos, dir, rand() % 128);
-
-        // Link them in the map
-        
-    }
-
-    // 4. Mouse handling
-    m_input->MS()->ProcessButtons(event);
-}
-
-void GameController::SyncPhysicsToUnits() {
-    for (auto& pair : m_physicsToUnitMap) {
-        RigidBody* body = pair.first;
-        Unit* unit = pair.second;
-
-        if (body && unit) {
-            // Access position/velocity directly from RigidBody
-            unit->position = body->GetPosition();  
-            unit->velocity = body->GetVelocity();  
-        }
-    }
 }
 
 void GameController::RunGame() {

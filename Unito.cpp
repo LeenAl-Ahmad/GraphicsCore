@@ -35,21 +35,21 @@ void Unit::HandleInput(SDL_Event event) {
     velocity = glm::vec2(0);
     isMoving = false;
 
-    if (input->KB()->KeyDown(event, SDLK_LEFT)) {
+    if (input->KB()->KeyDown(event, SDLK_d)) {
         velocity.x = -moveSpeed;
         facingRight = false;
         isMoving = true;
     }
-    if (input->KB()->KeyDown(event, SDLK_RIGHT)) {
+    if (input->KB()->KeyDown(event, SDLK_a)) {
         velocity.x = moveSpeed;
         facingRight = true;
         isMoving = true;
     }
-    if (input->KB()->KeyDown(event, SDLK_UP)) {
+    if (input->KB()->KeyDown(event, SDLK_w)) {
         velocity.y = -moveSpeed;
         isMoving = true;
     }
-    if (input->KB()->KeyDown(event, SDLK_DOWN)) {
+    if (input->KB()->KeyDown(event, SDLK_s)) {
         velocity.y = moveSpeed;
         isMoving = true;
     }

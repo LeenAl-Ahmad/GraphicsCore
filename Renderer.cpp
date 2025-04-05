@@ -173,7 +173,7 @@ void Renderer::RenderTexture(SDL_Texture* _texture, Rect _srect, Rect _rect, dou
     m_srect.h = _srect.Y2 - _srect.Y1;
 
     M_ASSERT(((SDL_RenderCopyEx(m_renderer, _texture,
-        &m_srect, &m_destRect, _a, nullptr, SDL_FLIP_NONE)) >= 0),
+        &m_srect, &m_destRect,_a, nullptr, SDL_FLIP_NONE)) >= 0),
         "Could not render texture");
 }
 

@@ -22,7 +22,6 @@ public:
     void Initialize();
     void RunGame();
     void ShutDown();
-    void HandleInput(SDL_Event _event);
 
     void SyncPhysicsToUnits();
 
