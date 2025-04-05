@@ -21,12 +21,12 @@ void GameController::Initialize() {
     m_renderer->Initialize();
 
     m_input = &InputController::Instance();
-    
+    m_physics = &PhysicsController::Instance();
     m_fpsFont = new TTFont();
     m_fpsFont->Initialize(20);
     m_currentFPS = 0.0f;
     timing = &Timing::Instance();
-
+    timing->SetFPS(80);
     level = new Level();
     level->AssignNonDefaultValues();
 }
