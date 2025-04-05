@@ -83,25 +83,38 @@ void GameController::SyncPhysicsToUnits() {
 void GameController::RunGame() {
     Initialize();
 
-    
     while (!m_quit) {
         timing->Tick();
 
-
-        // Input
+        // Input - process all pending events
         while (SDL_PollEvent(&m_sdlEvent) != 0) {
-            //HandleInput(m_sdlEvent);
+            if (m_sdlEvent.type == SDL_QUIT) {
+                m_quit = true;
+            }
+            // Let level handle other input events
+            level->HandleInput(m_sdlEvent);
         }
-        /*m_currentLevel->Update(timing->GetDeltaTime());
-        SyncPhysicsToUnits();  // Critical sync step
-*/      
+
+        // Update game state every frame (not just when events occur)
+        level->Update(timing->GetDeltaTime());
+
+        // Render
         level->Render(m_renderer, timing);
-           
-        m_fpsFont->Write(m_renderer->GetRenderer(), ("FPS: " + to_string(timing->GetFPS())).c_str(), SDL_Color{ 0,0,255 }, SDL_Point{ 10,10 });
-        m_fpsFont->Write(m_renderer->GetRenderer(), m_physics->ToString().c_str(), SDL_Color{ 0,0,255 }, SDL_Point{ 120,10 });
+
+        // UI Overlays
+        m_fpsFont->Write(m_renderer->GetRenderer(),
+            ("FPS: " + to_string(timing->GetFPS())).c_str(),
+            SDL_Color{ 0,0,255 },
+            SDL_Point{ 10,10 });
+        m_fpsFont->Write(m_renderer->GetRenderer(),
+            m_physics->ToString().c_str(),
+            SDL_Color{ 0,0,255 },
+            SDL_Point{ 120,10 });
+
+        // Present
         SDL_RenderPresent(m_renderer->GetRenderer());
 
-
+        // Frame rate control
         timing->CapFPS();
     }
 

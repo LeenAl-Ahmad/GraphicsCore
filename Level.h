@@ -6,6 +6,7 @@
 #include "Resource.h"
 #include "Timing.h"
 #include "PhysicsController.h"
+#include "GameController.h"
 
 class Level : public Resource
 {
@@ -13,20 +14,13 @@ public:
     Level();
     ~Level();
 
-    void AssignNonDefaultValues();
+    void AssignNonDefaultValues() override;
     void Render(Renderer* renderer, Timing* timing);
-    
+    void HandleInput(SDL_Event event); 
+    void Update(float deltaTime);
 
 private:
-    bool m_quit;
-    Unit* m_playerUnit;
-    SpriteSheet* m_circle;
-    std::vector<Unit*> m_units;
-    Unit* warrior;
-    Timing* timing;
-    PhysicsController* m_physics;
-
-    
+    Unit* player;
+    PhysicsController* physics;
 };
-
-#endif // LEVEL_H
+#endif
