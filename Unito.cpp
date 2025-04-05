@@ -4,32 +4,38 @@ ObjectPool<Unit>* Unit::Pool = nullptr;
 
 Unit::Unit()
 {
-	m_audio = nullptr;
-	memset(m_effects, 0, sizeof(SoundEffect*) * MaxEffectChannels);
+    warrior = nullptr;
 }
 
 Unit::~Unit() {
-	for (int i = 0; i < MaxEffectChannels; i++) {
-		if (m_effects[i]) {
-			// Properly release sound effects
-			delete m_effects[i];
-			m_effects[i] = nullptr;
-		}
-	}
-}
-
-void Unit::AssignNonDefaultValues() {
-    m_audio = &AudioController::Instance();
-
-    if (m_spriteSheet) {
-        m_spriteSheet->Load("./Assets/Textures/Warrior.tga");
-        m_spriteSheet->SetSize(1, 1, 32, 32);
-        m_spriteSheet->AddAnimation(EN_AN_IDLE, 0, 1, 0.0f);
-        m_spriteSheet->SetBlendMode(SDL_BLENDMODE_BLEND);
+    if (SpriteAnim::Pool != nullptr)
+    {
+        delete SpriteAnim::Pool;
+        SpriteAnim::Pool = nullptr;
+    }
+    if (SpriteSheet::Pool != nullptr)
+    {
+        delete SpriteSheet::Pool;
+        SpriteAnim::Pool = nullptr;
     }
 }
 
-void Unit::SetAnimation(AnimationNames name) {
+void Unit::AssignNonDefaultValues() {
+    SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
+    SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
+
+    warrior = SpriteSheet::Pool->GetResource();
+    warrior->Load("C:/Users/leana/source/repos/GraphicsCore/Assets/Textures/Warrior.tga");
+    warrior->SetSize(17, 6, 69, 44);
+    warrior->AddAnimation(EN_AN_IDLE, 0, 7, 0.2f);
+    warrior->SetBlendMode(SDL_BLENDMODE_BLEND);
+}
+
+Rect Unit::Update(AnimationNames _name, float _deltaTime)
+{
+    return warrior->Update(_name, _deltaTime);
+}
+/*void Unit::SetAnimation(AnimationNames name) {
     m_currentAnim = name;
 }
 
@@ -41,18 +47,8 @@ Rect Unit::GetCurrentFrame() const {
 }
 
 void Unit::Update(float deltaTime) {
-    if (m_spriteSheet) {
-        m_spriteSheet->Update(m_currentAnim, deltaTime);
-    }
 
-    // Update audio effects positions
-    if (m_audio) {
-        for (int i = 0; i < MaxEffectChannels; ++i) {
-            if (m_effects[i]) {
-                
-            }
-        }
-    }
+    m_spriteSheet->Update(m_currentAnim, deltaTime);
 }
 
 void Unit::Serialize(std::ostream& stream) {
@@ -70,16 +66,6 @@ void Unit::Serialize(std::ostream& stream) {
     if (hasSpriteSheet) {
         m_spriteSheet->Serialize(stream);
     }
-
-    // Serialize SoundEffects
-    for (int i = 0; i < MaxEffectChannels; ++i) {
-        byte hasEffect = (m_effects[i] != nullptr); 
-        stream.write(reinterpret_cast<const char*>(&hasEffect), sizeof(byte));
-        if (hasEffect) {
-            m_effects[i]->Serialize(stream);
-        }
-    }
-
 }
 
 void Unit::Deserialize(std::istream& stream) {
@@ -99,18 +85,6 @@ void Unit::Deserialize(std::istream& stream) {
         m_spriteSheet->Deserialize(stream);
     }
 
-    // Deserialize SoundEffects
-    for (int i = 0; i < MaxEffectChannels; ++i) {
-        byte hasEffect;
-        stream.read(reinterpret_cast<char*>(&hasEffect), sizeof(byte));
-        if (hasEffect) {
-            m_effects[i] = SoundEffect::Pool->GetResource();
-            m_effects[i]->Deserialize(stream);
-        }
-    }
-
-    // Recreate AudioController reference
-    m_audio = &AudioController::Instance();
 }
 
 void Unit::ToString() {
@@ -122,4 +96,4 @@ void Unit::ToString() {
 
     // Call base class ToString
     Resource::ToString();
-}
+}*/

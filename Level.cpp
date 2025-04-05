@@ -1,14 +1,11 @@
+
 #include "Level.h"
 
 Level::Level()
-    : m_quit(false),
-    m_playerUnit(nullptr),
-    m_circle(nullptr)
 {
-    Unit::Pool = new ObjectPool<Unit>();
-    SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
-    SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
-    AssignNonDefaultValues();
+    m_physics = nullptr;
+    warrior = nullptr;
+    
 }
 
 Level::~Level() {
@@ -22,53 +19,26 @@ Level::~Level() {
 }
 
 void Level::AssignNonDefaultValues() {
-    // Create player unit with specific animations
-    m_playerUnit = Unit::Pool->GetResource();
-    if (m_playerUnit && m_playerUnit->GetSpriteSheet()) {
-        m_playerUnit->GetSpriteSheet()->Load("./Assets/Textures/Player.tga");
-        m_playerUnit->GetSpriteSheet()->SetSize(6, 8, 64, 64);
-        m_playerUnit->GetSpriteSheet()->AddAnimation(EN_AN_IDLE, 0, 4, 0.2f);
-        m_playerUnit->GetSpriteSheet()->AddAnimation(EN_AN_RUN, 8, 6, 0.1f);
-        m_playerUnit->position = glm::vec2(100, 100);
-        m_units.push_back(m_playerUnit);
-    }
+    m_physics = &PhysicsController::Instance();
+    timing = &Timing::Instance();
+    Unit::Pool = new ObjectPool<Unit>();
+    SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
+    SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
 
-    // Create enemies if level 1
-        for (int i = 0; i < 10; ++i) {
-            Unit* enemy = Unit::Pool->GetResource();
-            if (enemy && enemy->GetSpriteSheet()) {
-                enemy->GetSpriteSheet()->Load("./Assets/Textures/Warrior.tga");
-                enemy->GetSpriteSheet()->SetSize(17, 6, 69, 44);
-                enemy->GetSpriteSheet()->AddAnimation(EN_AN_RUN, 6, 8, 0.00008f);
-                
-                enemy->position = glm::vec2(0, 10 + i * 100);
-                enemy->velocity = glm::vec2(80 + (rand() % 21), 0);
-                enemy->SetAnimation(EN_AN_RUN);
-                m_units.push_back(enemy);
-            }
-        }
+    warrior = Unit::Pool->GetResource();
+    warrior->AssignNonDefaultValues();
 }
 
-void Level::Render(Renderer* renderer) {
-    if (!renderer) return;
+void Level::Render(Renderer* renderer, Timing* timing) {
 
     renderer->SetDrawColor(Color(255, 255, 255, 255));
     renderer->ClearScreen();
 
-    for (Unit* unit : m_units) {
-        if (unit) {
-            Rect frame = unit->GetCurrentFrame();
-            auto pos = unit->position;
-            renderer->RenderTexture(unit->GetSpriteSheet(), frame,
-                Rect{ static_cast<unsigned int>(pos.x - 16),
-                     static_cast<unsigned int>(pos.y - 16),
-                     32, 32 },
-                255);
-        }
-    }
+    m_physics->Update(timing->GetDeltaTime());
+    Level::AssignNonDefaultValues();
+    renderer->RenderTexture(warrior->GetWarrior(), warrior->Update(EN_AN_IDLE, timing->GetDeltaTime()), Rect(300, 200, 400, 300));
 }
-
-Unit* Level::CreateUnit(glm::vec2 position) {
+/*Unit* Level::CreateUnit(glm::vec2 position) {
     Unit* unit = Unit::Pool->GetResource();
     if (unit) {
         unit->position = position;
@@ -113,4 +83,4 @@ void Level::Deserialize(std::istream& stream) {
 void Level::ToString() {
     cout << "LEVEL - Units: " << m_units.size() << endl;
     Resource::ToString();
-}
+}*/

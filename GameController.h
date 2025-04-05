@@ -1,10 +1,17 @@
 #ifndef GAME_CONTROLLER_H
 #define GAME_CONTROLLER_H
 
-#include "Level.h"
+
 #include "Renderer.h"
 #include "Timing.h"
 #include "TTFont.h"
+#include "InputController.h"
+#include "Keyboard.h"
+#include "Mouse.h"
+#include "PhysicsController.h"
+#include "Unito.h"
+
+class Level;
 
 class GameController : public Singleton<GameController>
 {
@@ -21,14 +28,18 @@ public:
 
 private:
     Renderer* m_renderer = nullptr;
-    Level* m_currentLevel = nullptr;
     Timing* timing;
     InputController* m_input;
     PhysicsController* m_physics;
     bool m_quit;
     TTFont* m_fpsFont;
     float m_currentFPS;
+    SDL_Event m_sdlEvent;
 
+    Level* level;
+
+    Unit* warrior;
+    SpriteSheet* warriors;
     std::map<RigidBody*, Unit*> m_physicsToUnitMap;
 };
 

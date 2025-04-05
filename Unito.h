@@ -7,22 +7,19 @@
 #include "AudioController.h"
 #include "InputController.h"
 
-class Unit : public Resource
+class Unit : public Texture
 {
 public:
     Unit();
     ~Unit();
 
     // Resource overrides
-    void Serialize(std::ostream& stream) override;
-    void Deserialize(std::istream& stream) override;
-    void ToString() override;
+    
     void AssignNonDefaultValues() override;
-    void Update(float deltaTime);
+    virtual Rect Update(AnimationNames _name, float _deltaTime);
 
-    void SetAnimation(AnimationNames name);
-    Rect GetCurrentFrame() const;
-    SpriteSheet* GetSpriteSheet() { return m_spriteSheet; }
+   
+    SpriteSheet* GetWarrior() { return warrior; }
 
     static ObjectPool<Unit>* Pool;
 
@@ -36,5 +33,7 @@ private:
     int m_health = 100;
     SoundEffect* m_effects[MaxEffectChannels];
     AudioController* m_audio;
+
+    SpriteSheet* warrior;
 };
 #endif
