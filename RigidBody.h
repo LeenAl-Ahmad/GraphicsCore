@@ -27,6 +27,21 @@ public:
     void SetWind(glm::vec2 _wind) { m_wind = _wind; }
     glm::vec2& GetRandomForce() { return m_randomForce; }
     void SetRandomForce(glm::vec2 _randomForce) { m_randomForce = _randomForce; }
+    const glm::vec4& GetTint() const { return m_tint; }
+    void SetTint(const glm::vec4& tint) { m_tint = tint; }
+    void SetTint(float r, float g, float b, float a = 1.0f) {
+        m_tint = glm::vec4(r, g, b, a);
+    }
+    void SetRedTint() { m_tint = glm::vec4(1.0f, 0.0f, 0.0f, m_tint.a); }
+    void SetGreenTint() { m_tint = glm::vec4(0.0f, 1.0f, 0.0f, m_tint.a); }
+    void SetBlueTint() { m_tint = glm::vec4(0.0f, 0.0f, 1.0f, m_tint.a); }
+    void ResetTint() { m_tint = glm::vec4(1.0f); } // White (no tint)
+
+    // Alpha control
+    float GetAlpha() const { return m_tint.a; }
+    void SetAlpha(float alpha) { m_tint.a = alpha; }
+
+    static ObjectPool<RigidBody>* Pool;
 
     float GetMass() { return m_mass; }
     void SetMass(float _mass) { m_mass = _mass; }
@@ -54,8 +69,6 @@ public:
         m_velocity = glm::vec2(0.0f);
     }
 
-    static ObjectPool<RigidBody>* Pool;
-
 private:
    // Members
     glm::vec2 m_position;
@@ -68,6 +81,7 @@ private:
     glm::vec2 m_randomForce;
     float m_mass;
     bool m_dead;
+    glm::vec4 m_tint = glm::vec4(1.0f);
 };
 
 #endif // RIGIDBODY_H

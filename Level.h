@@ -5,6 +5,7 @@
 #include "Unito.h"
 #include "Resource.h"
 #include "Timing.h"
+#include "TTFont.h"
 #include "PhysicsController.h"
 #include "InputController.h"
 #include "GameController.h"
@@ -26,6 +27,9 @@ public:
     void Deserialize(std::istream& _stream);
 
 float npcSpeed = 60.0f;
+
+    int m_taggedCount = 0;
+
 private:
     Unit* player;
     PhysicsController* physics;
@@ -41,5 +45,8 @@ private:
     const float MAX_NPC_SPEED = 60.0f;
     const float MIN_NPC_SPEED = 0.0f;
     const float SPEED_INCREMENT = 10.0f;
+    TTFont* m_fpsFont;
+    bool pressed = false;
+    string press = "pressed";
 };
 #endif

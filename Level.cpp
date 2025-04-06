@@ -9,12 +9,30 @@ Level::Level()
 
 Level::~Level() {
     for (Unit* npc : npcWarriors) {
-        Unit::Pool->ReturnResource(npc);
+        if (npc) Unit::Pool->ReturnResource(npc);
     }
     npcWarriors.clear();
+    npcTagged.clear();
+    npcDeathTimers.clear();
 
+    // Clean up player
     if (player) {
         Unit::Pool->ReturnResource(player);
+        player = nullptr;
+    }
+
+    // Clean up pools if needed
+    if (Unit::Pool) {
+        delete Unit::Pool;
+        Unit::Pool = nullptr;
+    }
+    if (SpriteSheet::Pool) {
+        delete SpriteSheet::Pool;
+        SpriteSheet::Pool = nullptr;
+    }
+    if (SpriteAnim::Pool) {
+        delete SpriteAnim::Pool;
+        SpriteAnim::Pool = nullptr;
     }
 }
 
@@ -31,6 +49,7 @@ void Level::AssignNonDefaultValues() {
 
     // Start player in center of screen (assuming 1920x1080 resolution)
     player->SetPosition(glm::vec2(1920 / 2, 1080 / 2));
+    player->SetBlueTint();
 
     for (int i = 0; i < 10; ++i) {
         Unit* npc = Unit::Pool->GetResource();
@@ -145,10 +164,22 @@ void Level::Render(Renderer* renderer, Timing* timing) {
 
         Rect destRect(x, y, x + width, y + height);
 
+        // Get the tint color
+        glm::vec4 tint = player->GetTint();
+
+        // Convert to SDL color format (0-255)
+        SDL_Color sdlTint = {
+            static_cast<Uint8>(tint.r * 255),
+            static_cast<Uint8>(tint.g * 255),
+            static_cast<Uint8>(tint.b * 255),
+            static_cast<Uint8>(tint.a * 255)
+        };
+
+        // OR if it only takes alpha:
         renderer->RenderTexture(player->GetWarrior(),
             srcRect,
-            destRect, 255
-        );
+            destRect,
+            static_cast<Uint8>(tint.a * 255));
     }
 
     // Render NPC warriors
@@ -177,7 +208,6 @@ void Level::Render(Renderer* renderer, Timing* timing) {
             // Calculate rectangle position (centered around NPC)
             float rectX = npc->GetPosition().x - 20 / 2;
             float rectY = npc->GetPosition().y - 20 / 2;
-
             // Create rectangle slightly larger than NPC
             Rect tagRect(rectX, rectY,
                 rectX + 20,
