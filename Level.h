@@ -21,6 +21,7 @@ public:
     void Render(Renderer* renderer, Timing* timing);
     void HandleInput(SDL_Event event, float deltaTime);
     void Update(float deltaTime);
+    void TagNearbyNPCs();
 
 private:
     Unit* player;
@@ -30,5 +31,7 @@ private:
     const float moveForce = 500.0f; 
     const float maxSpeed = 100.0f;
     std::vector<Unit*> npcWarriors;
+    std::vector<bool> npcTagged;
+
 };
 #endif

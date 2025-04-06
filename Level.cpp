@@ -46,6 +46,7 @@ void Level::AssignNonDefaultValues() {
 
         npc->SetScale(1.25f);
         npcWarriors.push_back(npc);
+        npcTagged.push_back(false);
     }
 }
 
@@ -108,7 +109,8 @@ void Level::Render(Renderer* renderer, Timing* timing) {
     }
 
     // Render NPC warriors
-    for (Unit* npc : npcWarriors) {
+    for (size_t i = 0; i < npcWarriors.size(); ++i) {
+        Unit* npc = npcWarriors[i];
         Rect srcRect = npc->Update(EN_AN_RUN, timing->GetDeltaTime());
 
         unsigned int width = static_cast<unsigned int>(69 * npc->GetScale());
@@ -118,16 +120,37 @@ void Level::Render(Renderer* renderer, Timing* timing) {
 
         Rect destRect(x, y, x + width, y + height);
 
-        renderer->RenderTexture(player->GetWarrior(),
+        // Use different alpha/color for tagged NPCs
+        Uint8 alpha = npcTagged[i] ? 150 : 255;
+        renderer->RenderTexture(npc->GetWarrior(),
             srcRect,
-            destRect, 255
+            destRect,
+            alpha
         );
+
+        // Draw a rectangle around tagged NPCs
+        if (npcTagged[i]) {
+            // Calculate rectangle position (centered around NPC)
+            float rectX = npc->GetPosition().x - 20 / 2;
+            float rectY = npc->GetPosition().y - 20 / 2;
+
+            // Create rectangle slightly larger than NPC
+            Rect tagRect(rectX, rectY,
+                rectX + 20,
+                rectY + 20);
+
+            // Set color to red with some transparency
+            renderer->SetDrawColor(Color(255, 0, 0, 180));
+            renderer->RenderRectangle(tagRect);
+        }
+
     }
 }
 
 void Level::Update(float deltaTime) {
     if (player) {
         player->UpdateMovement(deltaTime);
+        TagNearbyNPCs();
 
         for (Unit* npc : npcWarriors) {
             glm::vec2 toPlayer = player->GetPosition() - npc->GetPosition();
@@ -156,3 +179,18 @@ void Level::Update(float deltaTime) {
     }
     physics->Update(deltaTime);
 }
+
+void Level::TagNearbyNPCs() {
+    if (!player) return;
+
+    glm::vec2 playerPos = player->GetPosition();
+
+    for (size_t i = 0; i < npcWarriors.size(); ++i) {
+        Unit* npc = npcWarriors[i];
+        float distance = glm::distance(playerPos, npc->GetPosition());
+
+        // Tag if within 30 units, untag if farther away
+        npcTagged[i] = (distance < 30.0f);
+    }
+}
+
