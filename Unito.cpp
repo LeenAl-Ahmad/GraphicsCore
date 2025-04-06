@@ -15,7 +15,7 @@ Unit::~Unit() {
     }
 }
 
-void Unit::AssignNonDefaultValues() {
+void Unit::AssignNonDefValues() {
     warrior = SpriteSheet::Pool->GetResource();
     warrior->Load("C:/Users/leana/source/repos/GraphicsCore/Assets/Textures/Warrior.tga");
     warrior->SetSize(17, 6, 69, 44);
@@ -28,36 +28,6 @@ void Unit::AssignNonDefaultValues() {
 Rect Unit::Update(AnimationNames _name, float _deltaTime) {
     currentAnim = _name;
     return warrior->Update(_name, _deltaTime);
-}
-
-void Unit::HandleInput(SDL_Event event) {
-    InputController* input = &InputController::Instance();
-    velocity = glm::vec2(0);
-    isMoving = false;
-
-    if (input->KB()->KeyDown(event, SDLK_d)) {
-        velocity.x = -moveSpeed;
-        facingRight = false;
-        isMoving = true;
-    }
-    if (input->KB()->KeyDown(event, SDLK_a)) {
-        velocity.x = moveSpeed;
-        facingRight = true;
-        isMoving = true;
-    }
-    if (input->KB()->KeyDown(event, SDLK_w)) {
-        velocity.y = -moveSpeed;
-        isMoving = true;
-    }
-    if (input->KB()->KeyDown(event, SDLK_s)) {
-        velocity.y = moveSpeed;
-        isMoving = true;
-    }
-
-    // Normalize diagonal movement
-    if (velocity.x != 0 && velocity.y != 0) {
-        velocity = glm::normalize(velocity) * moveSpeed;
-    }
 }
 
 void Unit::UpdateMovement(float deltaTime) {

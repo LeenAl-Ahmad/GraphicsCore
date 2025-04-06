@@ -37,6 +37,23 @@ public:
     virtual void Update(float _deltaTime, glm::vec2 _force);
     virtual void Reset();
 
+    void Move(glm::vec2 offset) {
+        m_position += offset;
+        // Optional: Update velocity to reflect movement
+        m_velocity = offset / (1.0f / 60.0f); // Convert to velocity (pixels per second)
+    }
+
+    void MoveTo(glm::vec2 newPosition) {
+        glm::vec2 offset = newPosition - m_position;
+        Move(offset);
+    }
+
+    // Teleport with velocity reset
+    void Teleport(glm::vec2 newPosition) {
+        m_position = newPosition;
+        m_velocity = glm::vec2(0.0f);
+    }
+
     static ObjectPool<RigidBody>* Pool;
 
 private:

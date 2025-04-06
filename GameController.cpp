@@ -48,7 +48,7 @@ void GameController::RunGame() {
                 m_quit = true;
             }
             // Let level handle other input events
-            level->HandleInput(m_sdlEvent);
+            level->HandleInput(m_sdlEvent, timing->GetDeltaTime());
         }
 
         // Update game state every frame (not just when events occur)
