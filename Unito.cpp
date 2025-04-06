@@ -42,3 +42,32 @@ void Unit::UpdateMovement(float deltaTime) {
     // Set rotation based on facing direction
     rotation = facingRight ? 0.0f : 180.0f;
 }
+
+void Unit::Serialize(std::ostream& _stream) {
+    // Basic properties
+    _stream.write(reinterpret_cast<const char*>(&position.x), sizeof(position.x));
+    _stream.write(reinterpret_cast<const char*>(&position.y), sizeof(position.y));
+    _stream.write(reinterpret_cast<const char*>(&scale), sizeof(scale));
+    _stream.write(reinterpret_cast<const char*>(&facingRight), sizeof(facingRight));
+    _stream.write(reinterpret_cast<const char*>(&isMoving), sizeof(isMoving));
+    _stream.write(reinterpret_cast<const char*>(&state), sizeof(state));
+
+    // Animation state
+    int animIndex = static_cast<int>(currentAnim);
+    _stream.write(reinterpret_cast<const char*>(&animIndex), sizeof(animIndex));
+}
+
+void Unit::Deserialize(std::istream& _stream) {
+    // Basic properties
+    _stream.read(reinterpret_cast<char*>(&position.x), sizeof(position.x));
+    _stream.read(reinterpret_cast<char*>(&position.y), sizeof(position.y));
+    _stream.read(reinterpret_cast<char*>(&scale), sizeof(scale));
+    _stream.read(reinterpret_cast<char*>(&facingRight), sizeof(facingRight));
+    _stream.read(reinterpret_cast<char*>(&isMoving), sizeof(isMoving));
+    _stream.read(reinterpret_cast<char*>(&state), sizeof(state));
+
+    // Animation state
+    int animIndex;
+    _stream.read(reinterpret_cast<char*>(&animIndex), sizeof(animIndex));
+    currentAnim = static_cast<AnimationNames>(animIndex);
+}

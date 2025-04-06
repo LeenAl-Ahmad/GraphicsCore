@@ -19,6 +19,8 @@ public:
     void AssignNonDefValues();
     Rect Update(AnimationNames _name, float _deltaTime);
     void UpdateMovement(float deltaTime);
+    void Serialize(std::ostream& _stream);
+    void Deserialize(std::istream& _stream);
 
     SpriteSheet* GetWarrior() { return warrior; }
     glm::vec2 GetPosition() const { return position; }

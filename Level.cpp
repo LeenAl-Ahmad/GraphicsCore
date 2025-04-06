@@ -1,4 +1,4 @@
-#include "Level.h"
+﻿#include "Level.h"
 
 Level::Level()
 {
@@ -19,6 +19,7 @@ Level::~Level() {
 }
 
 void Level::AssignNonDefaultValues() {
+
     input = &InputController::Instance();
     physics = &PhysicsController::Instance();
     Unit::Pool = new ObjectPool<Unit>();
@@ -47,6 +48,7 @@ void Level::AssignNonDefaultValues() {
         npc->SetScale(1.25f);
         npcWarriors.push_back(npc);
         npcTagged.push_back(false);
+        npcDeathTimers.push_back(0.0f);
     }
 }
 
@@ -77,6 +79,47 @@ void Level::HandleInput(SDL_Event event, float deltaTime)
     if (keys[SDL_SCANCODE_S]) {
         offset.y += moveAmount;
         player->IsMoving();
+    }
+    if (input->KB()->KeyUp(event, SDLK_ESCAPE)) {
+        m_quit = true;
+    }
+    else if (input->KB()->KeyUp(event, SDLK_s)) {  // Save
+        std::ofstream file("level.bin", std::ios::binary);
+        if (file.is_open()) {
+            Serialize(file);
+            file.close();
+            std::cout << "Game saved to level.bin" << std::endl;
+        }
+        else {
+            std::cerr << "Failed to create level.bin" << std::endl;
+        }
+    }
+    else if (input->KB()->KeyUp(event, SDLK_l)) {  // Load
+        std::ifstream file("level.bin", std::ios::binary);
+        if (file.is_open()) {
+            // Clear current state
+            for (Unit* npc : npcWarriors) {
+                Unit::Pool->ReturnResource(npc);
+            }
+            npcWarriors.clear();
+            npcTagged.clear();
+            npcDeathTimers.clear();
+
+            Deserialize(file);
+            file.close();
+            std::cout << "Game loaded from level.bin" << std::endl;
+        }
+        else {
+            std::cerr << "Failed to load level.bin" << std::endl;
+        }
+    }
+    static float npcSpeed = 60.0f; // Default/base speed (you can adjust this)
+
+    if (input->KB()->KeyUp(event, SDLK_i)) { // Increase speed
+        npcSpeed = std::min(npcSpeed + 10.0f, 60.0f); // Cap at 60
+    }
+    if (input->KB()->KeyUp(event, SDLK_d)) { // Decrease speed
+        npcSpeed = std::max(npcSpeed - 10.0f, 0.0f); // Minimum 0
     }
     if (offset.x != 0 && offset.y != 0) {
         offset = glm::normalize(offset) * moveAmount;
@@ -111,6 +154,7 @@ void Level::Render(Renderer* renderer, Timing* timing) {
     // Render NPC warriors
     for (size_t i = 0; i < npcWarriors.size(); ++i) {
         Unit* npc = npcWarriors[i];
+
         Rect srcRect = npc->Update(EN_AN_RUN, timing->GetDeltaTime());
 
         unsigned int width = static_cast<unsigned int>(69 * npc->GetScale());
@@ -147,34 +191,52 @@ void Level::Render(Renderer* renderer, Timing* timing) {
     }
 }
 
+// In Level.cpp - Update()
 void Level::Update(float deltaTime) {
     if (player) {
         player->UpdateMovement(deltaTime);
         TagNearbyNPCs();
 
-        for (Unit* npc : npcWarriors) {
-            glm::vec2 toPlayer = player->GetPosition() - npc->GetPosition();
-            float distance = glm::length(toPlayer);
-            glm::vec2 direction = toPlayer / distance;
+        // Update NPCs
+        for (size_t i = 0; i < npcWarriors.size(); ) {
+            Unit* npc = npcWarriors[i];
 
-            // Set facing direction
-            npc->SetFacingRight(direction.x > 0);
+            if (npcTagged[i]) {
+                // 1. Stop movement
+                // (No movement code for tagged NPCs)
 
-            // Movement with minimum 5-unit distance
-            if (distance < 5.0f) {
-                // Push away strongly if too close
-                npc->SetPosition(npc->GetPosition() - direction * 100.0f * deltaTime);
+                // 2. Update death animation timer
+                npcDeathTimers[i] += deltaTime;
+
+                // 3. Remove when animation complete
+                if (npcDeathTimers[i] >= DEATH_ANIMATION_DURATION) {
+                    Unit::Pool->ReturnResource(npc);
+                    npcWarriors.erase(npcWarriors.begin() + i);
+                    npcTagged.erase(npcTagged.begin() + i);
+                    npcDeathTimers.erase(npcDeathTimers.begin() + i);
+                    continue; // Skip increment since we removed an element
+                }
             }
-            else if (distance < 140.0f) {
-                // Normal retreat
-                npc->SetPosition(npc->GetPosition() - direction * 60.0f * deltaTime);
-            }
-            else if (distance > 160.0f) {
-                // Approach
-                npc->SetPosition(npc->GetPosition() + direction * 60.0f * deltaTime);
+            else {
+                // Existing movement code for untagged NPCs
+                glm::vec2 toPlayer = player->GetPosition() - npc->GetPosition();
+                float distance = glm::length(toPlayer);
+                glm::vec2 direction = toPlayer / distance;
+
+                npc->SetFacingRight(direction.x > 0);
+
+                if (distance < 5.0f) {
+                    npc->SetPosition(npc->GetPosition() - direction * npcSpeed * 1.67f * deltaTime); // 100/60 ≈ 1.67
+                }
+                else if (distance < 140.0f) {
+                    npc->SetPosition(npc->GetPosition() - direction * npcSpeed * deltaTime);
+                }
+                else if (distance > 160.0f) {
+                    npc->SetPosition(npc->GetPosition() + direction * npcSpeed * deltaTime);
+                }
             }
 
-            npc->Update(EN_AN_RUN, deltaTime);
+            i++; // Only increment if we didn't remove an element
         }
     }
     physics->Update(deltaTime);
@@ -194,3 +256,79 @@ void Level::TagNearbyNPCs() {
     }
 }
 
+void Level::Serialize(std::ostream& _stream) {
+    // Serialize basic level data
+    _stream.write(reinterpret_cast<const char*>(&npcSpeed), sizeof(npcSpeed));
+    _stream.write(reinterpret_cast<const char*>(&m_quit), sizeof(m_quit));
+
+    // Serialize player
+    bool hasPlayer = (player != nullptr);
+    _stream.write(reinterpret_cast<const char*>(&hasPlayer), sizeof(hasPlayer));
+    if (hasPlayer) {
+        player->Serialize(_stream);
+    }
+
+    // Serialize NPCs
+    int npcCount = npcWarriors.size();
+    _stream.write(reinterpret_cast<const char*>(&npcCount), sizeof(npcCount));
+
+    // Corrected serialization code
+    for (size_t i = 0; i < npcWarriors.size(); i++) {
+        npcWarriors[i]->Serialize(_stream);
+
+        // Get references to the elements first
+        bool tagged = npcTagged[i];
+        float timer = npcDeathTimers[i];
+
+        // Then take their addresses
+        _stream.write(reinterpret_cast<const char*>(&tagged), sizeof(tagged));
+        _stream.write(reinterpret_cast<const char*>(&timer), sizeof(timer));
+    }
+
+    
+}
+
+void Level::Deserialize(std::istream& _stream) {
+    // Clear current state
+    for (Unit* npc : npcWarriors) {
+        Unit::Pool->ReturnResource(npc);
+    }
+    npcWarriors.clear();
+    npcTagged.clear();
+    npcDeathTimers.clear();
+
+    // Deserialize basic level data
+    _stream.read(reinterpret_cast<char*>(&npcSpeed), sizeof(npcSpeed));
+    _stream.read(reinterpret_cast<char*>(&m_quit), sizeof(m_quit));
+
+    // Deserialize player
+    bool hasPlayer;
+    _stream.read(reinterpret_cast<char*>(&hasPlayer), sizeof(hasPlayer));
+    if (hasPlayer) {
+        if (!player) {
+            player = Unit::Pool->GetResource();
+        }
+        player->Deserialize(_stream);
+    }
+
+    // Deserialize NPCs
+    int npcCount;
+    _stream.read(reinterpret_cast<char*>(&npcCount), sizeof(npcCount));
+
+    npcWarriors.reserve(npcCount);
+    npcTagged.reserve(npcCount);
+    npcDeathTimers.reserve(npcCount);
+
+    for (int i = 0; i < npcCount; i++) {
+        Unit* npc = Unit::Pool->GetResource();
+        npc->Deserialize(_stream);
+        npcWarriors.push_back(npc);
+
+        bool tagged;
+        float deathTimer;
+        _stream.read(reinterpret_cast<char*>(&tagged), sizeof(tagged));
+        _stream.read(reinterpret_cast<char*>(&deathTimer), sizeof(deathTimer));
+        npcTagged.push_back(tagged);
+        npcDeathTimers.push_back(deathTimer);
+    }
+}
