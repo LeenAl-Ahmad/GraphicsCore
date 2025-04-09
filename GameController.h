@@ -1,49 +1,38 @@
-#ifndef GAME_CONTROLLER_H
-#define GAME_CONTROLLER_H
+#pragma once
+#include "Renderer.h"
+#include "TTFont.h"
+#include "InputController.h"
+#include "PhysicsController.h"
+#include "Timing.h"
+#include "Keyboard.h"
+#include "Mouse.h"
+#include "SpriteSheet.h"
+#include "SpriteAnim.h"
+#include "RigidBody.h"
+#include "Level.h"
 
-#include "StandardIncludes.h"
-#include "AudioController.h"
-
-class Renderer;
-class TTFont;
-class InputController;
-class WavDraw;
-class SoundEffect;
-class Song;
-class PhysicsController;
-class Timing;
-class SpriteSheet;
-
-class GameController : public Singleton<GameController>
-{
-public:
-    // Constructors/Destructors
-    GameController();
-    virtual ~GameController();
-
-    // Methods
-    void RunGame();
-    void Initialize();
-    void HandleInput(SDL_Event _event);
-    void ShutDown();
-
+class GameController : public Singleton<GameController> {
 private:
-    // Members
+    bool m_quit;
     SDL_Event m_sdlEvent;
+
     Renderer* m_renderer;
     TTFont* m_fArial20;
-    bool m_quit;
     InputController* m_input;
-    AudioController* m_audio;
-    WavDraw* m_wavDraw;
-    SoundEffect* m_effects[MaxEffectChannels];
-    Song* m_song;
-    float m_zoomY;
-    Timing* m_timing;
     PhysicsController* m_physics;
+    Timing* m_timing;
+
+    Level* m_currentLevel;
+
     SpriteSheet* m_fire;
     SpriteSheet* m_smoke;
-    SpriteSheet* m_circle;
-};
 
-#endif // GAME_CONTROLLER_H
+public:
+    GameController();
+    ~GameController();
+
+    void Initialize();
+    void ShutDown();
+    void HandleInput(SDL_Event _event);
+    void RunGame();
+};
