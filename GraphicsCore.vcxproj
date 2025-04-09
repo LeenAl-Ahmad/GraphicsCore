@@ -76,18 +76,20 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)External\SDL2-2.30.9\include;$(SolutionDir)External\SDL2_ttf-2.20.1\include;$(SolutionDir)External\SDL2_mixer-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\SDL2-2.30.9\include;$(SolutionDir)External\SDL2_ttf-2.20.1\include;$(SolutionDir)External\SDL2_mixer-2.6.2\include;$(SolutionDir)External\glm;$(SolutionDir)External\glfw-3.3.4\include;$(SolutionDir)External\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL2-2.30.9\lib\x86;$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x86;$(SolutionDir)External\SDL2_mixer-2.6.2\lib\x86</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL2-2.30.9\lib\x86;$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x86;$(SolutionDir)External\SDL2_mixer-2.6.2\lib\x86;$(SolutionDir)External\glfw-3.3.4\lib-vc2019;$(SolutionDir)External\glew-2.1.0\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_mixer.lib;glew32d.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>copy /Y "$(SolutionDir)External\SDL2-2.30.9\lib\x86\SDL2.dll" "$(TargetDir)"
 copy /Y "$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x86\SDL2_ttf.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)External\SDL2_mixer-2.6.2\lib\x86\SDL2_mixer.dll" "$(TargetDir)"</Command>
+copy /Y "$(SolutionDir)External\SDL2_mixer-2.6.2\lib\x86\SDL2_mixer.dll" "$(TargetDir)"
+copy /Y "$(SolutionDir)External\glew-2.1.0\bin\glew32d.dll" "$(TargetDir)"
+copy /Y "$(SolutionDir)External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

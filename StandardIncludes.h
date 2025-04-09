@@ -29,6 +29,11 @@
 // Project headers
 #include "Singleton.h"
 #include "BasicStructs.h"
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
+#include "glm/glm.hpp"
+#include "glm/ext.hpp"
+
 
 // OS specific includes and defines
 #ifdef _WIN32
