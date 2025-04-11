@@ -7,8 +7,19 @@
 #include "SpriteSheet.h"
 #include "SpriteAnim.h"
 #include "RigidBody.h"
+#include "Unit.h"
 
 class Level {
+
+public:
+    Level(PhysicsController* physics);
+    ~Level();
+
+    void AddPhysicsObject();
+    void Render(Renderer* renderer, Timing* timing);
+    void AddUnit();
+    size_t GetUnitCount() const { return m_units.size(); }
+
 private:
     PhysicsController* m_physics;
     SpriteSheet* m_circleSprite;
@@ -18,10 +29,6 @@ private:
     glm::vec2 m_destinationAreaMin;
     glm::vec2 m_destinationAreaMax;
 
-public:
-    Level(PhysicsController* physics);
-    ~Level();
+    std::vector<Unit*> m_units;
 
-    void AddPhysicsObject();
-    void Render(Renderer* renderer, Timing* timing);
 };

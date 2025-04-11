@@ -74,8 +74,9 @@ void GameController::HandleInput(SDL_Event _event) {
         m_quit = true;
     }
     else if (m_input->KB()->KeyDown(_event, SDLK_a)) {
-        m_currentLevel->AddPhysicsObject();
+        m_currentLevel->AddUnit();  // Changed from AddPhysicsObject()
     }
+    
     m_input->MS()->ProcessButtons(_event);
 }
 
@@ -87,16 +88,25 @@ void GameController::RunGame() {
         m_renderer->SetDrawColor(Color(255, 255, 255, 255));
         m_renderer->ClearScreen();
 
+        // Input handling
         while (SDL_PollEvent(&m_sdlEvent) != 0) {
             HandleInput(m_sdlEvent);
         }
 
+        // Update systems
         m_physics->Update(m_timing->GetDeltaTime());
+
+        // Render everything
         m_currentLevel->Render(m_renderer, m_timing);
 
+        // Debug info
         m_fArial20->Write(m_renderer->GetRenderer(),
             ("FPS: " + to_string(m_timing->GetFPS())).c_str(),
             SDL_Color{ 0, 0, 255 }, SDL_Point{ 10, 10 });
+
+        m_fArial20->Write(m_renderer->GetRenderer(),
+            ("Units: " + to_string(m_currentLevel->GetUnitCount())).c_str(),  // Add this method to Level
+            SDL_Color{ 0, 0, 255 }, SDL_Point{ 10, 40 });
 
         m_fArial20->Write(m_renderer->GetRenderer(),
             m_physics->ToString().c_str(),
