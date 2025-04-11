@@ -30,5 +30,5 @@ private:
     glm::vec2 m_destinationAreaMax;
 
     std::vector<Unit*> m_units;
-
+    Texture* m_texture = nullptr;
 };

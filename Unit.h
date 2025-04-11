@@ -29,6 +29,6 @@ public:
 private:
     SpriteSheet* m_sprite;  // or Texture* if you prefer
     RigidBody* m_physicsBody;
-    // Add other unit properties as needed
+    Texture* m_texture;
 
 };

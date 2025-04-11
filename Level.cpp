@@ -7,6 +7,11 @@ Level::Level(PhysicsController* physics) : m_physics(physics) {
     m_destinationAreaMin = glm::vec2(0, 0);
     m_destinationAreaMax = glm::vec2(1920, 1080);
 
+    Texture::Pool = new ObjectPool<Texture>();
+    m_texture = Texture::Pool->GetResource();
+    
+    m_texture->Load("C:/Users/leana/source/repos/GraphicsCore/Assets/Textures/ackground.tga");
+
     m_circleSprite = SpriteSheet::Pool->GetResource();
     m_circleSprite->Load("C:/Users/leana/source/repos/GraphicsCore/Assets/Textures/Circle.tga");
     m_circleSprite->SetSize(1, 1, 32, 32);
@@ -18,9 +23,17 @@ Level::~Level() {
     if (m_circleSprite) {
         SpriteSheet::Pool->ReleaseResource(m_circleSprite);
     }
+    if (m_texture)
+    {
+        Texture::Pool->ReleaseResource(m_texture);
+    }
 }
 
 void Level::Render(Renderer* renderer, Timing* timing) {
+    if (m_texture && renderer)
+    {
+        renderer->RenderTexture(m_texture, Point(0, 0));
+    }
     for (auto unit : m_units) {
         unit->Render(renderer, timing);
     }
