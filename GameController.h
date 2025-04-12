@@ -11,6 +11,8 @@
 #include "RigidBody.h"
 #include "Level.h"
 
+class Player;
+
 class GameController : public Singleton<GameController> {
 private:
     bool m_quit;
@@ -23,9 +25,11 @@ private:
     Timing* m_timing;
 
     Level* m_currentLevel;
+    Level* m_nextLevel; 
 
     SpriteSheet* m_fire;
     SpriteSheet* m_smoke;
+    Player* player1;
 
 public:
     GameController();

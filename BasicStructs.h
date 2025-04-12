@@ -54,6 +54,13 @@ struct Point
 
 struct Rect
 {
+    Rect()
+    {
+        X1 = 0;
+        Y1 = 0;
+        X2 = 0;
+        Y2 = 0;
+    }
     Rect(unsigned int _x1, unsigned int _y1, unsigned int _x2, unsigned int _y2)
     {
         X1 = _x1;

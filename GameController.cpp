@@ -1,4 +1,5 @@
 #include "GameController.h"
+#include "Player.h"
 
 // GameController Implementation
 GameController::GameController() {
@@ -12,6 +13,7 @@ GameController::GameController() {
     m_currentLevel = nullptr;
     m_fire = nullptr;
     m_smoke = nullptr;
+    player1 = nullptr;
 }
 
 GameController::~GameController() {
@@ -27,26 +29,20 @@ void GameController::Initialize() {
     m_fArial20->Initialize(20);
     m_timing = &Timing::Instance();
     m_physics = &PhysicsController::Instance();
+    
 
     SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
     SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
-
-    m_fire = SpriteSheet::Pool->GetResource();
-    m_fire->Load("C:/Users/leana/source/repos/GraphicsCore/Assets/Textures/Fire.tga");
-    m_fire->SetSize(6, 10, 64, 64);
-    m_fire->AddAnimation(EN_AN_IDLE, 0, 6, 20.0f);
-    m_fire->SetBlendMode(SDL_BLENDMODE_BLEND);
-
-    m_smoke = SpriteSheet::Pool->GetResource();
-    m_smoke->Load("C:/Users/leana/source/repos/GraphicsCore/Assets/Textures/Smoke.tga");
-    m_smoke->SetSize(5, 6, 128, 128);
-    m_smoke->AddAnimation(EN_AN_SMOKE_RISE, 0, 30, 20.0f);
-    m_smoke->SetBlendMode(SDL_BLENDMODE_BLEND);
-
+    player1 = new Player();
     m_currentLevel = new Level(m_physics);
 }
 
 void GameController::ShutDown() {
+    if (player1 != nullptr)
+    {
+        delete player1;
+        player1 = nullptr;
+    }
     if (m_currentLevel) {
         delete m_currentLevel;
         m_currentLevel = nullptr;
@@ -73,10 +69,8 @@ void GameController::HandleInput(SDL_Event _event) {
         (m_input->KB()->KeyUp(_event, SDLK_ESCAPE))) {
         m_quit = true;
     }
-    else if (m_input->KB()->KeyDown(_event, SDLK_a)) {
-        m_currentLevel->AddUnit();  // Changed from AddPhysicsObject()
-    }
     
+    player1->HandleInput(_event, m_timing->GetDeltaTime());
     m_input->MS()->ProcessButtons(_event);
 }
 
@@ -95,12 +89,11 @@ void GameController::RunGame() {
 
         // Update systems
         m_physics->Update(m_timing->GetDeltaTime());
+        player1->Update(m_timing->GetDeltaTime());
+        
+        player1->Render(m_renderer);
 
-        // Render everything
-        m_currentLevel->Render(m_renderer, m_timing);
-
-        // Debug info
-        m_fArial20->Write(m_renderer->GetRenderer(),
+        /*m_fArial20->Write(m_renderer->GetRenderer(),
             ("FPS: " + to_string(m_timing->GetFPS())).c_str(),
             SDL_Color{ 0, 0, 255 }, SDL_Point{ 10, 10 });
 
@@ -110,7 +103,8 @@ void GameController::RunGame() {
 
         m_fArial20->Write(m_renderer->GetRenderer(),
             m_physics->ToString().c_str(),
-            SDL_Color{ 0, 0, 255 }, SDL_Point{ 120, 10 });
+            SDL_Color{ 0, 0, 255 }, SDL_Point{ 120, 10 });*/
+        
 
         SDL_RenderPresent(m_renderer->GetRenderer());
     }

@@ -150,6 +150,8 @@ copy /Y "$(SolutionDir)External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"<
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PhysicsController.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerState.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="Resource.cpp" />
@@ -180,6 +182,8 @@ copy /Y "$(SolutionDir)External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"<
     <ClInclude Include="objPool.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PhysicsController.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerState.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Resource.h" />
