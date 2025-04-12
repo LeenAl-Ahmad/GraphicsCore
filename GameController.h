@@ -37,7 +37,16 @@ private:
     Level* m_currentLevel;
     Level* m_nextLevel; 
 
-    SpriteSheet* m_fire;
-    SpriteSheet* m_smoke;
+    Level* level1 = nullptr;
+    Level* level2 = nullptr;
+
     Player* player1;
+
+    glm::vec2 m_spawnAreaMin;
+    glm::vec2 m_spawnAreaMax;
+    glm::vec2 m_destinationAreaMin;
+    glm::vec2 m_destinationAreaMax;
+
+    std::vector<Unit*> m_units;
+    Texture* m_texture = nullptr;
 };

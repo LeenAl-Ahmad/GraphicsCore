@@ -8,6 +8,7 @@
 #include "SpriteAnim.h"
 #include "RigidBody.h"
 #include "Unit.h"
+#include "Player.h"
 
 class Level {
 
@@ -31,4 +32,6 @@ private:
 
     std::vector<Unit*> m_units;
     Texture* m_texture = nullptr;
+
+    Player* m_player = nullptr;
 };
