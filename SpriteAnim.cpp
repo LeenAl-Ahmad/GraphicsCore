@@ -32,12 +32,18 @@ void SpriteAnim::Reset()
     m_clipCurrent = m_clipStart;
 }
 
-void SpriteAnim::Update(float _d)
-{
-    m_clipCurrent += m_clipSpeed * _d;
-    if (m_clipCurrent > m_clipEnd)
-    {
-        Reset();
+void SpriteAnim::Update(float _d) {
+    // Accumulate time and advance frames
+    m_accumulatedTime += _d;
+    float timePerFrame = 1.0f / m_clipSpeed;  // e.g., 0.2s/frame for 5 FPS
+
+    while (m_accumulatedTime >= timePerFrame) {
+        m_accumulatedTime -= timePerFrame;
+        m_clipCurrent++;
+
+        if (m_clipCurrent > m_clipEnd) {
+            Reset();
+        }
     }
 }
 

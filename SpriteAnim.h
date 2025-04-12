@@ -33,6 +33,7 @@ private:
     short m_clipEnd;
     short m_clipCurrent;
     float m_clipSpeed;
+    float m_accumulatedTime;
 };
 
 #endif // SPRITEANIM_H

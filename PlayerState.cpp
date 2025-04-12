@@ -44,6 +44,10 @@ void RockState::HandleInput(Player* _p, SDL_Event _e)
     if (InputController::Instance().KB()->KeyDown(_e, SDLK_SPACE)) {
         _p->SetState(PlayerState::GetRollState());
     }
+    else
+    {
+        _p->SetState(PlayerState::GetNormState());
+    }
 }
 
 void RockState::Update(Player* _p, float _dt)
@@ -56,6 +60,10 @@ void PaperState::HandleInput(Player* _p, SDL_Event _e)
     if (InputController::Instance().KB()->KeyDown(_e, SDLK_SPACE)) {
         _p->SetState(PlayerState::GetRollState());
     }
+    else
+    {
+        _p->SetState(PlayerState::GetNormState());
+    }
 }
 
 void PaperState::Update(Player* _p, float _dt)
@@ -67,6 +75,10 @@ void ScissorState::HandleInput(Player* _p, SDL_Event _e)
 {
     if (InputController::Instance().KB()->KeyDown(_e, SDLK_SPACE)) {
         _p->SetState(PlayerState::GetRollState());
+    }
+    else
+    {
+        _p->SetState(PlayerState::GetNormState());
     }
 }
 

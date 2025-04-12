@@ -11,11 +11,11 @@ Player::Player()
     m_animations = SpriteSheet::Pool->GetResource();
     m_animations->Load("./Assets/Textures/RockPaperScissors.tga");
     m_animations->SetSize(4, 4, 1120, 680);
-    m_animations->AddAnimation(EN_AN_IDLE, 0, 0, 10.0f);
-    m_animations->AddAnimation(EN_AN_ROLL, 0, 3, 4.0f);
-    m_animations->AddAnimation(EN_AN_ROCK, 4, 7, 8.0f);
-    m_animations->AddAnimation(EN_AN_PAPER, 8, 11, 8.0f);
-    m_animations->AddAnimation(EN_AN_SCISSOR, 12, 15, 8.0f);
+    m_animations->AddAnimation(EN_AN_IDLE, 0, 0, 0.0f);
+    m_animations->AddAnimation(EN_AN_ROLL, 0, 3, 6.0f);
+    m_animations->AddAnimation(EN_AN_ROCK, 4, 7, 2.0f);
+    m_animations->AddAnimation(EN_AN_PAPER, 8, 11, 2.0f);
+    m_animations->AddAnimation(EN_AN_SCISSOR, 12, 15, 2.0f);
     m_animations->SetBlendMode(SDL_BLENDMODE_BLEND);
 }
 

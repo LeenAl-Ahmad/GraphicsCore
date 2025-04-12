@@ -14,6 +14,16 @@
 class Player;
 
 class GameController : public Singleton<GameController> {
+
+public:
+    GameController();
+    ~GameController();
+
+    void Initialize();
+    void ShutDown();
+    void HandleInput(SDL_Event _event);
+    void RunGame();
+
 private:
     bool m_quit;
     SDL_Event m_sdlEvent;
@@ -30,13 +40,4 @@ private:
     SpriteSheet* m_fire;
     SpriteSheet* m_smoke;
     Player* player1;
-
-public:
-    GameController();
-    ~GameController();
-
-    void Initialize();
-    void ShutDown();
-    void HandleInput(SDL_Event _event);
-    void RunGame();
 };
