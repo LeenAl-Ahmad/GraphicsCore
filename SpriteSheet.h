@@ -40,7 +40,7 @@ public:
     void Deserialize(std::istream& _stream) override;
     void ToString() override;
 
-    void SetSize(byte _rows, byte _columns, byte _clipSizeX, byte _clipSizeY);
+    void SetSize(byte _rows, byte _columns, short _clipSizeX, short _clipSizeY);
     void AddAnimation(AnimationNames _name, short _clipStart, short _clipCount, float _clipSpeed);
     void Update(AnimationNames _name, float _deltaTime, Rect* _r);
     Rect Update(AnimationNames _name, float _deltaTime);
@@ -54,8 +54,8 @@ private:
     // Members
     byte m_rows;
     byte m_columns;
-    byte m_clipSizeX;
-    byte m_clipSizeY;
+    short m_clipSizeX;
+    short m_clipSizeY;
     map<AnimationNames, SpriteAnim*> m_animations;
 };
 

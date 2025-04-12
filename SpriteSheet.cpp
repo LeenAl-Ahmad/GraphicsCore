@@ -15,12 +15,12 @@ SpriteSheet::~SpriteSheet()
     m_animations.clear();
 }
 
-void SpriteSheet::SetSize(byte _rows, byte _columns, byte _clipSizeX, byte _clipSizeY)
+void SpriteSheet::SetSize(byte _rows, byte _columns, short _clipSizeX, short _clipSizeY)
 {
     m_rows = _rows;
     m_columns = _columns;
-    m_clipSizeX = _clipSizeX;
-    m_clipSizeY = _clipSizeY;
+    m_clipSizeX = _clipSizeX/_columns;
+    m_clipSizeY = _clipSizeY/_rows;
 }
 
 void SpriteSheet::AddAnimation(AnimationNames _name, short _clipStart, short _clipCount, float _clipSpeed)
@@ -105,7 +105,7 @@ void SpriteSheet::Update(AnimationNames _name, float _deltaTime, Rect* _r)
     _r->X1 = s % m_columns * m_clipSizeX;
     _r->Y1 = s / m_columns * m_clipSizeY;
     _r->X2 = _r->X1 + m_clipSizeX;
-    _r->Y2 = _r->X2 + m_clipSizeY;
+    _r->Y2 = _r->Y1 + m_clipSizeY;
 
     m_animations[_name]->Update(_deltaTime);
 }

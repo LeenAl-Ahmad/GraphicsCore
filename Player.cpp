@@ -10,7 +10,7 @@ Player::Player()
     m_rigidBody = PhysicsController::Instance().AddRigidBody(glm::vec2{ 100, 200 }, glm::vec2(0, 0), 40);
     m_animations = SpriteSheet::Pool->GetResource();
     m_animations->Load("./Assets/Textures/RockPaperScissors.tga");
-    m_animations->SetSize(4, 4, 1000, 1900);
+    m_animations->SetSize(4, 4, 1120, 680);
     m_animations->AddAnimation(EN_AN_IDLE, 0, 0, 10.0f);
     m_animations->AddAnimation(EN_AN_ROLL, 0, 3, 4.0f);
     m_animations->AddAnimation(EN_AN_ROCK, 4, 7, 8.0f);
@@ -36,6 +36,6 @@ void Player::Update(float _deltaTime)
 void Player::Render(Renderer* _renderer)
 {
     glm::vec2 p = m_rigidBody->GetPosition();
-    Rect destRect = Rect(p.x, p.y, p.x + 69 * 2, p.y + 44 * 2);
+    Rect destRect = Rect(p.x, p.y, p.x + 69 * 2, p.y + (69*2)*(170.0f/280.0f));
     _renderer->RenderTexture(m_animations, m_srcRect, destRect);
 }
