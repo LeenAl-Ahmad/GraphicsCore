@@ -21,6 +21,8 @@ public:
     void AddUnit();
     size_t GetUnitCount() const { return m_units.size(); }
 
+    void AddPlayer(Player* player, glm::vec2 dis, Renderer* renderer, Timing* timing, SDL_Event _event);
+
 private:
     PhysicsController* m_physics;
     SpriteSheet* m_circleSprite;

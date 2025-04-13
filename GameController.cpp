@@ -13,6 +13,9 @@ GameController::GameController() {
     m_currentLevel = level1;
     m_nextLevel = level2;
     player1 = nullptr;
+    m_audio = nullptr;
+    m_sound = nullptr;
+    m_song = nullptr;
 }
 
 GameController::~GameController() {
@@ -28,11 +31,10 @@ void GameController::Initialize() {
     m_fArial20->Initialize(20);
     m_timing = &Timing::Instance();
     m_physics = &PhysicsController::Instance();
-    
-    m_spawnAreaMin = glm::vec2(16, 16);
-    m_spawnAreaMax = glm::vec2(1920 - 32, 1080 - 32);
-    m_destinationAreaMin = glm::vec2(0, 0);
-    m_destinationAreaMax = glm::vec2(1920, 1080);
+
+    m_nickname1 = "";
+    m_nickname2 = "";
+    m_showError = false;
 
     // Initialize pools
     Texture::Pool = new ObjectPool<Texture>();
@@ -41,15 +43,17 @@ void GameController::Initialize() {
 
     // Load texture
     m_texture = Texture::Pool->GetResource();
-    m_texture->Load("C:/Users/leana/source/repos/GraphicsCore/Assets/Textures/ackground.tga");
+    m_texture->Load("./Assets/Textures/ackground.tga");
 
     // Create player and levels
     player1 = new Player();
+    
     level1 = new Level(m_physics);
     level2 = new Level(m_physics);
 
     // Add player to initial level
     m_currentLevel = level1;
+
     
 }
 
@@ -97,18 +101,96 @@ void GameController::ShutDown() {
 }
 
 void GameController::HandleInput(SDL_Event _event) {
-    if ((_event.type == SDL_QUIT) ||
-        (m_input->KB()->KeyUp(_event, SDLK_ESCAPE))) {
+    // Handle quit command
+    if ((_event.type == SDL_QUIT)) {
         m_quit = true;
+        return;
     }
 
-    if (m_input->KB()->KeyDown(_event, SDLK_n))
-    {
-        m_currentLevel = level2;
+    // Level 1 nickname handling
+    if (m_currentLevel == level1) {
+        string input = m_input->KB()->TextInput(_event);
+
+        // Add input to current nickname
+        if (!input.empty()) {
+            if (!m_acceptingNickname2) {
+                m_nickname1 += input;  // Always add to nickname1 first
+            }
+            else {
+                m_nickname2 += input;  // Switch to nickname2 when flag is set
+            }
+        }
+
+        // Press 'A' to start assigning to nickname2
+        if (m_input->KB()->KeyDown(_event, SDLK_RETURN)) {
+            m_acceptingNickname2 = true;
+        }
     }
-    
+
+    // Player controls
     player1->HandleInput(_event, m_timing->GetDeltaTime());
     m_input->MS()->ProcessButtons(_event);
+}
+ 
+void GameController::RenderLevel1UI() {
+    // White instructional text at bottom
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        "Quit [ESC]: Quits the application",
+        SDL_Color{ 255, 255, 255, 255 },
+        SDL_Point{ 50, 1000 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        "Next Nickname [Return]: Continue to next nickname",
+        SDL_Color{ 255, 255, 255, 255 },
+        SDL_Point{ 50, 1030 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        assign.c_str(),
+        SDL_Color{ 255, 255, 0},
+        SDL_Point{ 400, 400 });
+
+    // Yellow nickname displays
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        "Player 1:",
+        SDL_Color{ 255, 255, 0, 255 },
+        SDL_Point{ 40, 80 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        m_nickname1.c_str(),
+        SDL_Color{ 255, 255, 0},
+        SDL_Point{ 160, 80 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        "Player 2:",
+        SDL_Color{ 255, 255, 0, 255 },
+        SDL_Point{ 40, 220 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        m_nickname2.c_str(),
+        SDL_Color{ 255, 255, 0, 255 },
+        SDL_Point{ 80, 220 });
+
+    // Show which nickname is being entered
+    if (m_acceptingNickname1 == false) {
+        m_fArial20->Write(m_renderer->GetRenderer(),
+            "->",
+            SDL_Color{ 0, 255, 0, 255 },
+            SDL_Point{ 20, 80 });
+    }
+    else if (m_acceptingNickname1 == true) {
+        m_fArial20->Write(m_renderer->GetRenderer(),
+            "->",
+            SDL_Color{ 0, 255, 0, 255 },
+            SDL_Point{ 20, 220 });
+    }
+
+    // Error message if needed
+    if (m_showError) {
+        m_fArial20->Write(m_renderer->GetRenderer(),
+            "ERROR: Nickname cannot be empty!",
+            SDL_Color{ 255, 0, 0, 255 },
+            SDL_Point{ 400, 500 });
+    }
 }
 
 void GameController::RunGame() {
@@ -129,15 +211,29 @@ void GameController::RunGame() {
 
         // Level-specific rendering
         if (m_currentLevel == level1) {
+            
             m_renderer->RenderTexture(m_texture, Point(0, 0));
+            
         }
         else
         {
+            
+            m_renderer->ClearScreen();
+            
             m_physics->Update(m_timing->GetDeltaTime());
             if (player1) {
                 player1->Update(m_timing->GetDeltaTime());
                 player1->Render(m_renderer);
+                player1->GetRigidBody()->SetPosition({ 20, 30 });
+                m_fArial20->Write(m_renderer->GetRenderer(),
+                    "Player 1", SDL_Color{ 0,255,0 }, SDL_Point{ 20, 20 });
+                m_fArial20->Write(m_renderer->GetRenderer(),
+                    "Wins: ", SDL_Color{ 0,0,255 }, SDL_Point{ 20, 40 });
+                m_fArial20->Write(m_renderer->GetRenderer(),
+                    "Losses: ", SDL_Color{ 0,0,255 }, SDL_Point{ 20, 60 });
             }
+            if (player2)
+            { }
         }
         
 
@@ -159,3 +255,6 @@ void GameController::RunGame() {
 
     ShutDown();
 }
+
+
+

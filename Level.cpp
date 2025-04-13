@@ -14,7 +14,13 @@ Level::~Level() {
 }
 
 void Level::Render(Renderer* renderer, Timing* timing) {
-    
+    if (m_texture && renderer)
+    {
+        renderer->RenderTexture(m_texture, Point(0, 0));
+    }
+    for (auto unit : m_units) {
+        unit->Render(renderer, timing);
+    }
 }
 
 void Level::AddUnit() {
@@ -53,4 +59,16 @@ void Level::AddPhysicsObject() {
     dir = glm::normalize(dir) * 200.0f;
 
     m_physics->AddRigidBody(pos, dir, rand() % 128);
+}
+
+void Level::AddPlayer(Player* player, glm::vec2 pos, Renderer* renderer, Timing* timing, SDL_Event _event)
+{
+    m_player = player;
+
+    m_player->HandleInput(_event, timing->GetDeltaTime());
+    m_player->GetRigidBody()->SetPosition(pos);
+    m_player->Render(renderer);
+
+    std::cout << "Player added at position: ("
+        << pos.x << ", " << pos.y << ")" << std::endl;
 }
