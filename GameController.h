@@ -43,7 +43,7 @@ private:
     Texture* m_texture;
 
     bool m_showError;
-    std::string assign;
+    string assign ="";
     bool m_acceptingNickname1;
     bool m_acceptingNickname2;
     std::string m_nickname1;
