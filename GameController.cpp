@@ -105,11 +105,24 @@ void GameController::HandleInput(SDL_Event _event)
     
     else if (m_input->KB()->KeyUp(m_sdlEvent, SDLK_RETURN))
     {
+        pressedReturn++;
+        if (pressedReturn == 1)
+        {
+            m_nickname1 = assign;
+            m_acceptingNickname1 = true;
+        }
+        else if (pressedReturn == 2)
+        {
+            m_nickname2 = assign;
+            m_acceptingNickname2 = true;
+        }
         assign = "";
         m_audio->Play(m_song);
     }
     
     else m_input->MS()->ProcessButtons(_event);
+
+    
 }
 
 void GameController::RunGame()
@@ -130,12 +143,72 @@ void GameController::RunGame()
 
         m_renderer->RenderTexture(m_texture, Point(0, 0));
 
-        m_fArial20->Write(m_renderer->GetRenderer(),
-            assign.c_str(),
-            SDL_Color{ 255, 255, 0 },
-            SDL_Point{ 250,200});
+        RenderLevel1UI();
 
         SDL_RenderPresent(m_renderer->GetRenderer());
     }
     ShutDown();
+}
+
+
+//for level
+void GameController::RenderLevel1UI() {
+    // White instructional text at bottom
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        "Quit [ESC]: Quits the application",
+        SDL_Color{ 255, 255, 255, 255 },
+        SDL_Point{ 50, 1000 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        "Next Nickname [Return]: Continue to next nickname",
+        SDL_Color{ 255, 255, 255, 255 },
+        SDL_Point{ 50, 1030 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        assign.c_str(),
+        SDL_Color{ 255, 255, 0 },
+        SDL_Point{ 400, 400 });
+
+    // Yellow nickname displays
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        "Player 1:",
+        SDL_Color{ 255, 255, 0, 255 },
+        SDL_Point{ 40, 80 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        m_nickname1.c_str(),
+        SDL_Color{ 255, 255, 0 },
+        SDL_Point{ 160, 80 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        "Player 2:",
+        SDL_Color{ 255, 255, 0, 255 },
+        SDL_Point{ 40, 220 });
+
+    m_fArial20->Write(m_renderer->GetRenderer(),
+        m_nickname2.c_str(),
+        SDL_Color{ 255, 255, 0, 255 },
+        SDL_Point{ 160, 220 });
+
+    // Show which nickname is being entered
+    if (m_acceptingNickname1 == false) {
+        m_fArial20->Write(m_renderer->GetRenderer(),
+            "->",
+            SDL_Color{ 0, 255, 0, 255 },
+            SDL_Point{ 20, 80 });
+    }
+    else if (m_acceptingNickname1 == true) {
+        m_fArial20->Write(m_renderer->GetRenderer(),
+            "->",
+            SDL_Color{ 0, 255, 0, 255 },
+            SDL_Point{ 20, 220 });
+    }
+
+    // Error message if needed
+    if (m_showError) {
+        m_fArial20->Write(m_renderer->GetRenderer(),
+            "ERROR: Nickname cannot be empty!",
+            SDL_Color{ 255, 0, 0, 255 },
+            SDL_Point{ 400, 500 });
+    }
 }

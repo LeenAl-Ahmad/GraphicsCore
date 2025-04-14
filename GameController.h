@@ -29,6 +29,8 @@ public:
     void HandleInput(SDL_Event _event);
     void ShutDown();
 
+    //for Level
+    void RenderLevel1UI();
 private:
     // Members 
     bool m_quit;
@@ -44,14 +46,15 @@ private:
 
     bool m_showError;
     string assign ="";
-    bool m_acceptingNickname1;
-    bool m_acceptingNickname2;
+    bool m_acceptingNickname1 = false;
+    bool m_acceptingNickname2 = false;
     std::string m_nickname1;
     std::string m_nickname2;
     glm::vec2 m_spawnAreaMin;
     glm::vec2 m_spawnAreaMax;
     glm::vec2 m_destinationAreaMin;
     glm::vec2 m_destinationAreaMax;
+    int pressedReturn = 0;
 
     //Sound
     AudioController* m_audio;
