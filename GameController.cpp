@@ -118,6 +118,8 @@ void GameController::RunGame()
 
     while (!m_quit)
     {
+        m_time->Tick();
+
         m_renderer->SetDrawColor(Color(255, 255, 255, 255));
         m_renderer->ClearScreen();
 
@@ -126,6 +128,8 @@ void GameController::RunGame()
             HandleInput(m_sdlEvent);
         }
 
+        m_renderer->RenderTexture(m_texture, Point(0, 0));
+
         m_fArial20->Write(m_renderer->GetRenderer(),
             assign.c_str(),
             SDL_Color{ 255, 255, 0 },
@@ -133,4 +137,5 @@ void GameController::RunGame()
 
         SDL_RenderPresent(m_renderer->GetRenderer());
     }
+    ShutDown();
 }
