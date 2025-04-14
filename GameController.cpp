@@ -59,7 +59,12 @@ void GameController::Initialize()
     m_texture->Load("C:/Users/leana/source/repos/GraphicsCore/Assets/Textures/ackground.tga");
     m_effects[0] = m_audio->LoadEffect("C:/Users/leana/source/repos/GraphicsCore/Assets/Audio/Effects/Whoosh.wav");
     m_song = m_audio->LoadSong("C:/Users/leana/source/repos/GraphicsCore/Assets/Audio/Music/Track1.mp3");
-    
+    if (currentlevel) 
+    { m_audio->Play(m_song); }
+    else
+    {
+       
+    }
 }
 
 void GameController::ShutDown()
@@ -102,6 +107,11 @@ void GameController::HandleInput(SDL_Event _event)
     {
         assign += temp;
     }
+
+    else if (m_input->KB()->KeyDown(m_sdlEvent, SDLK_BACKSPACE))
+    {
+        
+    }
     
     else if (m_input->KB()->KeyUp(m_sdlEvent, SDLK_RETURN))
     {
@@ -117,12 +127,15 @@ void GameController::HandleInput(SDL_Event _event)
             m_acceptingNickname2 = true;
         }
         assign = "";
-        m_audio->Play(m_song);
+        if (pressedReturn == 3)
+        {
+            m_audio->StopMusic();
+            currentlevel = false;
+        }
     }
     
     else m_input->MS()->ProcessButtons(_event);
 
-    
 }
 
 void GameController::RunGame()
@@ -132,18 +145,22 @@ void GameController::RunGame()
     while (!m_quit)
     {
         m_time->Tick();
-
-        m_renderer->SetDrawColor(Color(255, 255, 255, 255));
-        m_renderer->ClearScreen();
-
-        while (SDL_PollEvent(&m_sdlEvent) != 0)
+        
+        if (currentlevel)
         {
-            HandleInput(m_sdlEvent);
+            while (SDL_PollEvent(&m_sdlEvent) != 0)
+            {
+                HandleInput(m_sdlEvent);
+            }
+            m_renderer->RenderTexture(m_texture, Point(0, 0));
+            RenderLevel1UI();
         }
-
-        m_renderer->RenderTexture(m_texture, Point(0, 0));
-
-        RenderLevel1UI();
+        else
+        {
+            m_renderer->SetDrawColor(Color(255, 255, 255, 255));
+            m_renderer->ClearScreen();
+            
+        }
 
         SDL_RenderPresent(m_renderer->GetRenderer());
     }

@@ -48,6 +48,7 @@ private:
     string assign ="";
     bool m_acceptingNickname1 = false;
     bool m_acceptingNickname2 = false;
+    bool currentlevel = true;
     std::string m_nickname1;
     std::string m_nickname2;
     glm::vec2 m_spawnAreaMin;
