@@ -1,68 +1,62 @@
-#pragma once
-#include "Renderer.h"
-#include "TTFont.h"
-#include "InputController.h"
-#include "PhysicsController.h"
-#include "Timing.h"
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "SpriteSheet.h"
-#include "SpriteAnim.h"
-#include "RigidBody.h"
-#include "Level.h"
+#ifndef GAME_CONTROLLER_H
+#define GAME_CONTROLLER_H
 
+#include "StandardIncludes.h"
 #include "AudioController.h"
-#include "SoundEffect.h"
-#include "Song.h"
 
+class Renderer;
+class TTFont;
+class InputController;
+class WavDraw;
+class SoundEffect;
+class Song;
+class PhysicsController;
+class Timing;
+class Level;
 class Player;
+class Texture;
 
-class GameController : public Singleton<GameController> {
-
+class GameController : public Singleton<GameController>
+{
 public:
+    // Constructors/Destructors
     GameController();
-    ~GameController();
+    virtual ~GameController();
 
-    void Initialize();
-    void ShutDown();
-    void HandleInput(SDL_Event _event);
+    // Methods
     void RunGame();
-
-    void RenderLevel1UI();
-
-    std::string SetName1(std::string input) { return m_nickname1 = input; }
+    void Initialize();
+    void HandleInput(SDL_Event _event);
+    void ShutDown();
 
 private:
+    // Members 
     bool m_quit;
     SDL_Event m_sdlEvent;
-
     Renderer* m_renderer;
     TTFont* m_fArial20;
     InputController* m_input;
-    PhysicsController* m_physics;
-    Timing* m_timing;
-
-    Level* m_currentLevel;
-    Level* m_nextLevel; 
-
-    Level* level1 = nullptr;
-    Level* level2 = nullptr;
-
+    PhysicsController* m_ph;
+    Timing* m_time;
+    Level* level1;
     Player* player1;
-    Player* player2;
+    Texture* m_texture;
 
-
-    std::vector<Unit*> m_units;
-    Texture* m_texture = nullptr;
-
+    bool m_showError;
+    std::string assign;
+    bool m_acceptingNickname1;
+    bool m_acceptingNickname2;
     std::string m_nickname1;
     std::string m_nickname2;
-    bool m_acceptingNickname1 = false;
-    bool m_acceptingNickname2 = false;
-    bool m_showError;
+    glm::vec2 m_spawnAreaMin;
+    glm::vec2 m_spawnAreaMax;
+    glm::vec2 m_destinationAreaMin;
+    glm::vec2 m_destinationAreaMax;
 
-    std::string assign;
+    //Sound
     AudioController* m_audio;
-    SoundEffect* m_sound;
+    SoundEffect* m_effects[MaxEffectChannels];
     Song* m_song;
 };
+
+#endif // GAME_CONTROLLER_H
